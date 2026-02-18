@@ -96,3 +96,4 @@ mshlat/
 ├── supabase-rls.sql            # כללי אבטחה
 └── README.md                   # הקובץ הזה
 ```
+
