@@ -498,13 +498,13 @@ const minReq = { morning: 3, evening: 3, night: 2 };
 
 // ── STYLES ────────────────────────────────────────────────────
 const S = {
-  root: { minHeight: "100vh", background: "#0B1120", fontFamily: "Rubik, Segoe UI, Tahoma, sans-serif", direction: "rtl", color: "#E2E8F0" },
-  glass: { background: "rgba(15,23,42,0.65)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 16 },
-  card: { background: "rgba(30,41,59,0.7)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 14, padding: 20 },
-  btnPrimary: { background: "linear-gradient(135deg,#DC2626,#991B1B)", color: "#fff", border: "none", borderRadius: 10, padding: "10px 22px", fontWeight: 700, cursor: "pointer", fontSize: 14, fontFamily: "inherit", boxShadow: "0 4px 14px rgba(220,38,38,0.35)" },
-  btnGhost: { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", color: "#94A3B8", borderRadius: 10, padding: "8px 16px", cursor: "pointer", fontSize: 13, fontFamily: "inherit" },
-  input: { width: "100%", padding: "12px 16px", borderRadius: 10, border: "2px solid rgba(255,255,255,0.08)", background: "rgba(15,23,42,0.9)", color: "#F1F5F9", fontSize: 15, outline: "none", boxSizing: "border-box", fontFamily: "inherit" },
-  badge: (bg, tx) => ({ display: "inline-block", padding: "2px 10px", borderRadius: 20, background: bg, color: tx, fontSize: 11, fontWeight: 600, letterSpacing: 0.3 }),
+  root: { minHeight: "100vh", background: "#F8FAFC", fontFamily: "Rubik, Segoe UI, Tahoma, sans-serif", direction: "rtl", color: "#1E293B" },
+  glass: { background: "#FFFFFF", border: "1px solid #E2E8F0", borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.06)" },
+  card: { background: "#FFFFFF", border: "1px solid #E2E8F0", borderRadius: 14, padding: 20, boxShadow: "0 1px 3px rgba(0,0,0,0.04)" },
+  btnPrimary: { background: "linear-gradient(135deg,#DC2626,#B91C1C)", color: "#fff", border: "none", borderRadius: 10, padding: "12px 24px", fontWeight: 700, cursor: "pointer", fontSize: 15, fontFamily: "inherit", boxShadow: "0 4px 14px rgba(220,38,38,0.25)" },
+  btnGhost: { background: "#F1F5F9", border: "1px solid #CBD5E1", color: "#475569", borderRadius: 10, padding: "10px 18px", cursor: "pointer", fontSize: 14, fontFamily: "inherit" },
+  input: { width: "100%", padding: "12px 16px", borderRadius: 10, border: "2px solid #CBD5E1", background: "#FFFFFF", color: "#1E293B", fontSize: 16, outline: "none", boxSizing: "border-box", fontFamily: "inherit" },
+  badge: (bg, tx) => ({ display: "inline-block", padding: "3px 12px", borderRadius: 20, background: bg, color: tx, fontSize: 12, fontWeight: 600, letterSpacing: 0.3 }),
 };
 
 // ══════════════════════════════════════════════════════════════
@@ -671,7 +671,7 @@ export default function App() {
   if (view === "login") {
     return (
       <div style={{ ...S.root, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{ position: "fixed", inset: 0, background: "radial-gradient(ellipse at 30% 80%, rgba(220,38,38,0.12) 0%, transparent 55%), radial-gradient(ellipse at 70% 20%, rgba(245,158,11,0.08) 0%, transparent 50%)", pointerEvents: "none" }} />
+        <div style={{ position: "fixed", inset: 0, background: "radial-gradient(ellipse at 30% 80%, rgba(220,38,38,0.06) 0%, transparent 55%), radial-gradient(ellipse at 70% 20%, rgba(245,158,11,0.15) 0%, transparent 50%)", pointerEvents: "none" }} />
         <div style={{ ...S.glass, padding: "44px 38px", width: 400, maxWidth: "92vw", textAlign: "center", position: "relative" }}>
           <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: "linear-gradient(90deg,#DC2626,#F59E0B,#DC2626)", borderRadius: "16px 16px 0 0" }} />
           <div style={{ fontSize: 42, marginBottom: 8 }}>🔥</div>
@@ -687,7 +687,7 @@ export default function App() {
           <button onClick={() => { if (pw === ADMIN_PASS) setView("calendar"); else setPwErr("סיסמה שגויה"); }} style={{ ...S.btnPrimary, width: "100%" }}>
             כניסת מנהל
           </button>
-          <p style={{ color: "#475569", fontSize: 11, marginTop: 20 }}>עובדים נכנסים דרך הקישור האישי</p>
+          <p style={{ color: "#475569", fontSize: 13, marginTop: 20 }}>עובדים נכנסים דרך הקישור האישי</p>
         </div>
       </div>
     );
@@ -725,27 +725,27 @@ export default function App() {
           </div>
           {/* constraint count */}
           <div style={{ ...S.card, padding: 14, marginBottom: 16 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "#94A3B8", marginBottom: 6 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "#64748B", marginBottom: 6 }}>
               <span>חסימות: {blockCount} / {maxConst}</span>
               <span>{blockCount >= maxConst ? "🔴 מגבלה מלאה" : "🟢 ניתן לחסום"}</span>
             </div>
-            <div style={{ height: 5, background: "rgba(255,255,255,0.06)", borderRadius: 3 }}>
+            <div style={{ height: 5, background: "#E2E8F0", borderRadius: 3 }}>
               <div style={{ height: "100%", borderRadius: 3, width: `${Math.min((blockCount / maxConst) * 100, 100)}%`, background: blockCount >= maxConst ? "#EF4444" : "#F59E0B", transition: "width 0.3s" }} />
             </div>
           </div>
           {/* table */}
           <div style={{ ...S.glass, overflow: "hidden" }}>
-            <div style={{ padding: "14px 18px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+            <div style={{ padding: "14px 18px", borderBottom: "1px solid #E2E8F0" }}>
               <h3 style={{ margin: 0, fontSize: 16 }}>אילוצים והעדפות</h3>
               <p style={{ color: "#64748B", fontSize: 12, margin: "4px 0 0" }}>🚫 חסימה · ⭐ העדפה · 🏖️ חופשה</p>
             </div>
             <div style={{ overflowX: "auto" }}>
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead>
-                  <tr style={{ background: "rgba(15,23,42,0.6)" }}>
-                    <th style={{ padding: "10px 14px", textAlign: "right", color: "#94A3B8", fontSize: 12 }}>תאריך</th>
+                  <tr style={{ background: "#F1F5F9" }}>
+                    <th style={{ padding: "10px 14px", textAlign: "right", color: "#64748B", fontSize: 12 }}>תאריך</th>
                     {SHIFT_KEYS.map(st => <th key={st} style={{ padding: "10px 8px", color: SHIFTS[st].clr, fontSize: 12 }}>{SHIFTS[st].icon} {SHIFTS[st].label}</th>)}
-                    <th style={{ padding: "10px 8px", color: "#94A3B8", fontSize: 12 }}>חופשה</th>
+                    <th style={{ padding: "10px 8px", color: "#64748B", fontSize: 12 }}>חופשה</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -753,11 +753,11 @@ export default function App() {
                     const isVac = vacations[`${emp.id}_${day.ds}`];
                     const pendingVac = vacReqs.find(r => r.empId === emp.id && r.ds === day.ds && r.status === "pending");
                     return (
-                      <tr key={day.date} style={{ borderBottom: "1px solid rgba(255,255,255,0.03)", background: day.isHoliday ? "rgba(139,92,246,0.04)" : day.isWE ? "rgba(245,158,11,0.03)" : undefined }}>
+                      <tr key={day.date} style={{ borderBottom: "1px solid rgba(0,0,0,0.06)", background: day.isHoliday ? "rgba(139,92,246,0.08)" : day.isWE ? "rgba(245,158,11,0.06)" : undefined }}>
                         <td style={{ padding: "8px 14px", fontSize: 13, fontWeight: 600, color: day.isWE ? "#F59E0B" : "#E2E8F0" }}>
                           <div>{HEB_DAYS[day.dow]} {day.date}/{month.m + 1}</div>
-                          {day.hebDate && <div style={{ fontSize: 10, color: "#818CF8", fontWeight: 400 }}>{day.hebDate}</div>}
-                          {day.holidays.length > 0 && <div style={{ fontSize: 10, color: RELIGION_CLR[day.holidays[0].religion]?.tx || "#94A3B8", fontWeight: 400 }}>{day.holidays[0].nameHe}</div>}
+                          {day.hebDate && <div style={{ fontSize: 12, color: "#818CF8", fontWeight: 400 }}>{day.hebDate}</div>}
+                          {day.holidays.length > 0 && <div style={{ fontSize: 12, color: RELIGION_CLR[day.holidays[0].religion]?.tx || "#94A3B8", fontWeight: 400 }}>{day.holidays[0].nameHe}</div>}
                         </td>
                         {SHIFT_KEYS.map(st => {
                           const ck = constraints[`${emp.id}_${shiftKey(day.ds, st)}`];
@@ -765,19 +765,19 @@ export default function App() {
                           return (
                             <td key={st} style={{ padding: "4px 8px", textAlign: "center" }}>
                               {assigned ? (
-                                <span style={{ ...S.badge("rgba(220,38,38,0.2)", "#F87171"), fontSize: 11 }}>משובץ ✓</span>
+                                <span style={{ ...S.badge("rgba(220,38,38,0.2)", "#F87171"), fontSize: 13 }}>משובץ ✓</span>
                               ) : (
                                 <div style={{ display: "flex", gap: 4, justifyContent: "center" }}>
-                                  <button onClick={() => { if (blockCount >= maxConst && ck !== "block") { notify("הגעת למגבלת חסימות!", "error"); return; } setConstraint(emp.id, day.ds, st, "block"); }} style={{ width: 30, height: 30, borderRadius: 7, border: "none", background: ck === "block" ? "rgba(239,68,68,0.25)" : "rgba(255,255,255,0.04)", color: ck === "block" ? "#EF4444" : "#475569", cursor: "pointer", fontSize: 13 }} title="חסימה">🚫</button>
-                                  <button onClick={() => setConstraint(emp.id, day.ds, st, "prefer")} style={{ width: 30, height: 30, borderRadius: 7, border: "none", background: ck === "prefer" ? "rgba(52,211,153,0.25)" : "rgba(255,255,255,0.04)", color: ck === "prefer" ? "#34D399" : "#475569", cursor: "pointer", fontSize: 13 }} title="העדפה">⭐</button>
+                                  <button onClick={() => { if (blockCount >= maxConst && ck !== "block") { notify("הגעת למגבלת חסימות!", "error"); return; } setConstraint(emp.id, day.ds, st, "block"); }} style={{ width: 30, height: 30, borderRadius: 7, border: "none", background: ck === "block" ? "rgba(239,68,68,0.25)" : "#F1F5F9", color: ck === "block" ? "#EF4444" : "#475569", cursor: "pointer", fontSize: 13 }} title="חסימה">🚫</button>
+                                  <button onClick={() => setConstraint(emp.id, day.ds, st, "prefer")} style={{ width: 30, height: 30, borderRadius: 7, border: "none", background: ck === "prefer" ? "rgba(52,211,153,0.25)" : "#F1F5F9", color: ck === "prefer" ? "#34D399" : "#475569", cursor: "pointer", fontSize: 13 }} title="העדפה">⭐</button>
                                 </div>
                               )}
                             </td>
                           );
                         })}
                         <td style={{ padding: "4px 8px", textAlign: "center" }}>
-                          {isVac ? <span style={{ fontSize: 11, color: "#34D399" }}>✅</span> : pendingVac ? <span style={{ fontSize: 11, color: "#F59E0B" }}>⏳</span> : (
-                            <button onClick={() => requestVacation(emp.id, day.ds)} style={{ background: "rgba(255,255,255,0.04)", border: "none", borderRadius: 6, padding: "5px 10px", color: "#64748B", cursor: "pointer", fontSize: 12 }}>🏖️</button>
+                          {isVac ? <span style={{ fontSize: 13, color: "#34D399" }}>✅</span> : pendingVac ? <span style={{ fontSize: 13, color: "#F59E0B" }}>⏳</span> : (
+                            <button onClick={() => requestVacation(emp.id, day.ds)} style={{ background: "#F1F5F9", border: "none", borderRadius: 6, padding: "5px 10px", color: "#64748B", cursor: "pointer", fontSize: 12 }}>🏖️</button>
                           )}
                         </td>
                       </tr>
@@ -826,9 +826,9 @@ export default function App() {
         <div style={{ ...S.glass, overflow: "hidden" }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)" }}>
             {HEB_DAYS_SHORT.map((d, i) => (
-              <div key={d} style={{ padding: "10px 4px", textAlign: "center", fontSize: 13, fontWeight: 700, color: i >= 5 ? "#F59E0B" : "#64748B", background: "rgba(15,23,42,0.7)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>{d}</div>
+              <div key={d} style={{ padding: "10px 4px", textAlign: "center", fontSize: 13, fontWeight: 700, color: i >= 5 ? "#F59E0B" : "#64748B", background: "#F1F5F9", borderBottom: "1px solid #E2E8F0" }}>{d}</div>
             ))}
-            {Array(firstDow).fill(0).map((_, i) => <div key={`e${i}`} style={{ background: "rgba(15,23,42,0.3)", minHeight: 110 }} />)}
+            {Array(firstDow).fill(0).map((_, i) => <div key={`e${i}`} style={{ background: "#F8FAFC", minHeight: 110 }} />)}
             {days.map(day => {
               let hasAlert = false;
               const cells = SHIFT_KEYS.map(st => {
@@ -840,32 +840,32 @@ export default function App() {
               });
               const hasHoliday = day.holidays.length > 0;
               return (
-                <div key={day.date} style={{ background: hasHoliday ? "rgba(139,92,246,0.06)" : day.isWE ? "rgba(245,158,11,0.04)" : "rgba(15,23,42,0.3)", minHeight: 120, padding: "4px 4px", borderBottom: "1px solid rgba(255,255,255,0.03)", borderLeft: "1px solid rgba(255,255,255,0.03)", position: "relative", cursor: "pointer" }}
-                  onMouseEnter={e => { e.currentTarget.style.background = hasHoliday ? "rgba(139,92,246,0.1)" : day.isWE ? "rgba(245,158,11,0.08)" : "rgba(255,255,255,0.04)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = hasHoliday ? "rgba(139,92,246,0.06)" : day.isWE ? "rgba(245,158,11,0.04)" : "rgba(15,23,42,0.3)"; }}
+                <div key={day.date} style={{ background: hasHoliday ? "rgba(139,92,246,0.08)" : day.isWE ? "rgba(245,158,11,0.06)" : "#FFFFFF", minHeight: 140, padding: "6px 6px", borderBottom: "1px solid rgba(0,0,0,0.06)", borderLeft: "1px solid rgba(0,0,0,0.06)", position: "relative", cursor: "pointer" }}
+                  onMouseEnter={e => { e.currentTarget.style.background = hasHoliday ? "rgba(139,92,246,0.12)" : day.isWE ? "rgba(245,158,11,0.15)" : "#F1F5F9"; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = hasHoliday ? "rgba(139,92,246,0.08)" : day.isWE ? "rgba(245,158,11,0.06)" : "#F8FAFC"; }}
                 >
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 1 }}>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: day.isWE ? "#F59E0B" : "#E2E8F0", background: day.isWE ? "rgba(245,158,11,0.12)" : undefined, borderRadius: 5, padding: "0 4px" }}>{day.date}</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: day.isWE ? "#F59E0B" : "#E2E8F0", background: day.isWE ? "rgba(245,158,11,0.15)" : undefined, borderRadius: 5, padding: "0 4px" }}>{day.date}</span>
                     <div style={{ display: "flex", alignItems: "center", gap: 3 }}>
                       {hasAlert && <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#EF4444", boxShadow: "0 0 5px rgba(239,68,68,0.5)" }} />}
                     </div>
                   </div>
                   {/* Hebrew date */}
-                  {day.hebDate && <div style={{ fontSize: 9, color: "#818CF8", marginBottom: 1, lineHeight: 1.1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{day.hebDate}</div>}
+                  {day.hebDate && <div style={{ fontSize: 13, color: "#818CF8", marginBottom: 1, lineHeight: 1.1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{day.hebDate}</div>}
                   {/* Holidays */}
                   {day.holidays.length > 0 && (
                     <div style={{ marginBottom: 1 }}>
                       {day.holidays.slice(0, 2).map((hol, hi) => {
                         const rc = RELIGION_CLR[hol.religion] || RELIGION_CLR.jewish;
-                        return <div key={hi} style={{ fontSize: 8, color: rc.tx, background: rc.bg, borderRadius: 3, padding: "0 3px", marginBottom: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: "14px" }}>{rc.icon} {hol.nameHe}</div>;
+                        return <div key={hi} style={{ fontSize: 12, color: rc.tx, background: rc.bg, borderRadius: 3, padding: "0 3px", marginBottom: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: "14px" }}>{rc.icon} {hol.nameHe}</div>;
                       })}
-                      {day.holidays.length > 2 && <div style={{ fontSize: 8, color: "#64748B" }}>+{day.holidays.length - 2}</div>}
+                      {day.holidays.length > 2 && <div style={{ fontSize: 12, color: "#64748B" }}>+{day.holidays.length - 2}</div>}
                     </div>
                   )}
                   {cells.map(({ st, a, v }) => (
                     <div key={st} onClick={() => setModal({ day, st })} style={{ display: "flex", alignItems: "center", gap: 3, padding: "2px 4px", borderRadius: 5, marginBottom: 1, background: v.ok ? `${SHIFTS[st].clr}12` : "rgba(239,68,68,0.08)", border: `1px solid ${v.ok ? SHIFTS[st].clr + "25" : "rgba(239,68,68,0.25)"}` }}>
-                      <span style={{ fontSize: 9 }}>{SHIFTS[st].icon}</span>
-                      <span style={{ fontSize: 10, fontWeight: 700, color: v.ok ? SHIFTS[st].clr : "#EF4444" }}>{a.length}/{minReq[st]}</span>
+                      <span style={{ fontSize: 13 }}>{SHIFTS[st].icon}</span>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: v.ok ? SHIFTS[st].clr : "#EF4444" }}>{a.length}/{minReq[st]}</span>
                     </div>
                   ))}
                 </div>
@@ -905,12 +905,12 @@ export default function App() {
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 6 }}>
                     {day.holidays.map((hol, hi) => {
                       const rc = RELIGION_CLR[hol.religion] || RELIGION_CLR.jewish;
-                      return <span key={hi} style={{ fontSize: 11, color: rc.tx, background: rc.bg, border: `1px solid ${rc.border}`, borderRadius: 6, padding: "2px 8px" }}>{rc.icon} {hol.nameHe}</span>;
+                      return <span key={hi} style={{ fontSize: 13, color: rc.tx, background: rc.bg, border: `1px solid ${rc.border}`, borderRadius: 6, padding: "2px 8px" }}>{rc.icon} {hol.nameHe}</span>;
                     })}
                   </div>
                 )}
               </div>
-              <button onClick={() => setModal(null)} style={{ background: "rgba(255,255,255,0.08)", border: "none", borderRadius: 8, width: 32, height: 32, color: "#94A3B8", cursor: "pointer", fontSize: 16 }}>✕</button>
+              <button onClick={() => setModal(null)} style={{ background: "#E2E8F0", border: "none", borderRadius: 8, width: 32, height: 32, color: "#64748B", cursor: "pointer", fontSize: 16 }}>✕</button>
             </div>
           </div>
           {/* status */}
@@ -931,27 +931,27 @@ export default function App() {
                 <div key={emp.id} onClick={() => { if (!isBlocked && !isVac) toggleAssign(day.ds, st, emp.id); }} style={{
                   display: "flex", alignItems: "center", justifyContent: "space-between",
                   padding: "10px 12px", borderRadius: 10, marginBottom: 5, cursor: isBlocked || isVac ? "not-allowed" : "pointer",
-                  background: isIn ? "rgba(220,38,38,0.12)" : "rgba(255,255,255,0.02)",
-                  border: `1px solid ${isIn ? "rgba(220,38,38,0.35)" : ck === "prefer" ? "rgba(52,211,153,0.3)" : "rgba(255,255,255,0.05)"}`,
+                  background: isIn ? "rgba(220,38,38,0.12)" : "#FAFAFA",
+                  border: `1px solid ${isIn ? "rgba(220,38,38,0.2)" : ck === "prefer" ? "rgba(52,211,153,0.3)" : "#E2E8F0"}`,
                   opacity: isBlocked || isVac ? 0.35 : 1, transition: "all 0.15s",
                 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <div style={{ width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", background: isIn ? "#DC2626" : "rgba(255,255,255,0.08)", color: "#fff", fontSize: 12, fontWeight: 700 }}>
+                    <div style={{ width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", background: isIn ? "#DC2626" : "#F1F5F9", color: "#fff", fontSize: 12, fontWeight: 700 }}>
                       {isIn ? "✓" : emp.name[0]}
                     </div>
                     <div>
                       <div style={{ fontSize: 14, fontWeight: 500 }}>{emp.name}</div>
                       <div style={{ display: "flex", gap: 6, alignItems: "center", marginTop: 2 }}>
                         <span style={S.badge(ROLE_CLR[emp.role].bg, ROLE_CLR[emp.role].tx)}>{emp.role}</span>
-                        <span style={{ color: "#475569", fontSize: 11 }}>{stats[emp.id]?.t || 0} משמרות</span>
+                        <span style={{ color: "#475569", fontSize: 13 }}>{stats[emp.id]?.t || 0} משמרות</span>
                       </div>
                     </div>
                   </div>
-                  <div style={{ display: "flex", gap: 6, alignItems: "center", fontSize: 11 }}>
+                  <div style={{ display: "flex", gap: 6, alignItems: "center", fontSize: 13 }}>
                     {isBlocked && <span style={{ color: "#EF4444" }}>🚫 חסום</span>}
                     {isVac && <span style={{ color: "#F59E0B" }}>🏖️ חופשה</span>}
                     {ck === "prefer" && <span style={{ color: "#34D399" }}>⭐</span>}
-                    {otherSt && <span style={{ color: "#94A3B8" }}>📋 {SHIFTS[otherSt].label}</span>}
+                    {otherSt && <span style={{ color: "#64748B" }}>📋 {SHIFTS[otherSt].label}</span>}
                   </div>
                 </div>
               );
@@ -975,25 +975,25 @@ export default function App() {
             const blocks = Object.entries(constraints).filter(([k, v]) => k.startsWith(`${emp.id}_`) && v === "block").length;
             return (
               <div key={emp.id} style={{ ...S.card, transition: "transform 0.15s, border-color 0.15s" }}
-                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)"; }}
-                onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)"; }}
+                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.borderColor = "#CBD5E1"; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.borderColor = "#E2E8F0"; }}
               >
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
                   <div>
                     <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}>{emp.name}</div>
                     <div style={{ display: "flex", gap: 6 }}>
                       <span style={S.badge(ROLE_CLR[emp.role].bg, ROLE_CLR[emp.role].tx)}>{emp.role}</span>
-                      <span style={S.badge("rgba(255,255,255,0.06)", "#94A3B8")}>{emp.type === "מלאה" ? "מלאה" : "סטודנט"}</span>
+                      <span style={S.badge("#E2E8F0", "#94A3B8")}>{emp.type === "מלאה" ? "מלאה" : "סטודנט"}</span>
                     </div>
                   </div>
                   <button onClick={() => setLinkId(linkId === emp.id ? null : emp.id)} style={{ ...S.btnGhost, padding: "4px 10px", fontSize: 12 }}>🔗</button>
                 </div>
                 {/* progress */}
                 <div style={{ marginBottom: 10 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#64748B", marginBottom: 4 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "#64748B", marginBottom: 4 }}>
                     <span>{s.t} / 21+ משמרות</span><span>{s.h} שעות</span>
                   </div>
-                  <div style={{ height: 4, background: "rgba(255,255,255,0.06)", borderRadius: 2 }}>
+                  <div style={{ height: 4, background: "#E2E8F0", borderRadius: 2 }}>
                     <div style={{ height: "100%", borderRadius: 2, width: `${prog}%`, background: prog >= 100 ? "#EF4444" : prog >= 75 ? "#F59E0B" : "#059669", transition: "width 0.3s" }} />
                   </div>
                 </div>
@@ -1001,20 +1001,20 @@ export default function App() {
                 <div style={{ display: "flex", gap: 6 }}>
                   {SHIFT_KEYS.map(st => (
                     <div key={st} style={{ flex: 1, textAlign: "center", padding: "3px 0", borderRadius: 6, background: `${SHIFTS[st].clr}10` }}>
-                      <div style={{ fontSize: 10 }}>{SHIFTS[st].icon}</div>
+                      <div style={{ fontSize: 12 }}>{SHIFTS[st].icon}</div>
                       <div style={{ color: SHIFTS[st].clr, fontSize: 14, fontWeight: 800 }}>{s[st[0]]}</div>
                     </div>
                   ))}
-                  <div style={{ flex: 1, textAlign: "center", padding: "3px 0", borderRadius: 6, background: "rgba(245,158,11,0.08)" }}>
-                    <div style={{ fontSize: 10 }}>🏠</div>
+                  <div style={{ flex: 1, textAlign: "center", padding: "3px 0", borderRadius: 6, background: "rgba(245,158,11,0.15)" }}>
+                    <div style={{ fontSize: 12 }}>🏠</div>
                     <div style={{ color: "#F59E0B", fontSize: 14, fontWeight: 800 }}>{s.we}</div>
                   </div>
                 </div>
-                {blocks > 0 && <div style={{ marginTop: 6, fontSize: 11, color: "#EF4444" }}>🚫 {blocks} חסימות</div>}
+                {blocks > 0 && <div style={{ marginTop: 6, fontSize: 13, color: "#EF4444" }}>🚫 {blocks} חסימות</div>}
                 {linkId === emp.id && (
-                  <div style={{ marginTop: 10, padding: 10, borderRadius: 8, background: "rgba(0,0,0,0.3)", border: "1px solid rgba(255,255,255,0.08)" }}>
-                    <div style={{ color: "#64748B", fontSize: 11, marginBottom: 2 }}>קישור אישי:</div>
-                    <div style={{ color: "#60A5FA", fontSize: 11, wordBreak: "break-all", fontFamily: "monospace" }}>{window.location?.origin || "https://app.vercel.app"}?emp={emp.id}</div>
+                  <div style={{ marginTop: 10, padding: 10, borderRadius: 8, background: "rgba(0,0,0,0.3)", border: "1px solid #E2E8F0" }}>
+                    <div style={{ color: "#64748B", fontSize: 13, marginBottom: 2 }}>קישור אישי:</div>
+                    <div style={{ color: "#60A5FA", fontSize: 13, wordBreak: "break-all", fontFamily: "monospace" }}>{window.location?.origin || "https://app.vercel.app"}?emp={emp.id}</div>
                     <button onClick={() => { setEmpPortal(emp); setView("employee_portal"); }} style={{ ...S.btnGhost, marginTop: 8, width: "100%", fontSize: 12, textAlign: "center" }}>
                       👁️ תצוגה מקדימה של פורטל העובד
                     </button>
@@ -1051,19 +1051,19 @@ export default function App() {
             <div key={i} style={S.card}>
               <div style={{ color: "#64748B", fontSize: 12, marginBottom: 6 }}>{c.label}</div>
               <div style={{ color: c.clr, fontSize: 30, fontWeight: 900, lineHeight: 1 }}>{c.val}</div>
-              <div style={{ color: "#475569", fontSize: 11, marginTop: 4 }}>{c.sub}</div>
+              <div style={{ color: "#475569", fontSize: 13, marginTop: 4 }}>{c.sub}</div>
             </div>
           ))}
         </div>
         {/* table */}
         <div style={{ ...S.glass, overflow: "hidden" }}>
-          <div style={{ padding: "14px 20px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+          <div style={{ padding: "14px 20px", borderBottom: "1px solid #E2E8F0" }}>
             <h3 style={{ margin: 0, fontSize: 16 }}>סטטיסטיקת עובדים</h3>
           </div>
           <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead>
-                <tr style={{ background: "rgba(15,23,42,0.6)" }}>
+                <tr style={{ background: "#F1F5F9" }}>
                   {["שם","תפקיד","סה\"כ","☀️","🌆","🌙","סופ\"ש","שעות","סטטוס"].map(h => (
                     <th key={h} style={{ padding: "10px 12px", textAlign: "right", color: "#64748B", fontSize: 12, fontWeight: 600, whiteSpace: "nowrap" }}>{h}</th>
                   ))}
@@ -1076,7 +1076,7 @@ export default function App() {
                   if (s.t < 21) { status = "חסר"; stClr = "#F87171"; }
                   else if (s.h > 218) { status = "חריגה"; stClr = "#F59E0B"; }
                   return (
-                    <tr key={emp.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.03)" }}>
+                    <tr key={emp.id} style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
                       <td style={{ padding: "10px 12px", fontSize: 13, fontWeight: 500 }}>{emp.name}</td>
                       <td style={{ padding: "10px 12px" }}><span style={S.badge(ROLE_CLR[emp.role].bg, ROLE_CLR[emp.role].tx)}>{emp.role}</span></td>
                       <td style={{ padding: "10px 12px", fontSize: 14, fontWeight: 800 }}>{s.t}</td>
@@ -1084,8 +1084,8 @@ export default function App() {
                       <td style={{ padding: "10px 12px", color: SHIFTS.evening.clr }}>{s.e}</td>
                       <td style={{ padding: "10px 12px", color: SHIFTS.night.clr }}>{s.n}</td>
                       <td style={{ padding: "10px 12px", color: "#F59E0B" }}>{s.we}</td>
-                      <td style={{ padding: "10px 12px", color: "#94A3B8" }}>{s.h}</td>
-                      <td style={{ padding: "10px 12px" }}><span style={{ ...S.badge(`${stClr}15`, stClr), fontSize: 11 }}>{status}</span></td>
+                      <td style={{ padding: "10px 12px", color: "#64748B" }}>{s.h}</td>
+                      <td style={{ padding: "10px 12px" }}><span style={{ ...S.badge(`${stClr}15`, stClr), fontSize: 13 }}>{status}</span></td>
                     </tr>
                   );
                 })}
@@ -1102,7 +1102,7 @@ export default function App() {
               <h3 style={{ margin: "0 0 14px", fontSize: 16 }}>🗓️ חגים ומועדים בחודש זה</h3>
               <div style={{ display: "flex", gap: 6, marginBottom: 12 }}>
                 {Object.entries(RELIGION_CLR).map(([rel, rc]) => (
-                  <span key={rel} style={{ fontSize: 11, color: rc.tx, background: rc.bg, border: `1px solid ${rc.border}`, borderRadius: 6, padding: "3px 10px" }}>
+                  <span key={rel} style={{ fontSize: 13, color: rc.tx, background: rc.bg, border: `1px solid ${rc.border}`, borderRadius: 6, padding: "3px 10px" }}>
                     {rc.icon} {rel === "jewish" ? "יהדות" : rel === "christian" ? "נצרות" : "אסלאם"}
                   </span>
                 ))}
@@ -1115,9 +1115,9 @@ export default function App() {
                       <div style={{ fontSize: 18 }}>{rc.icon}</div>
                       <div>
                         <div style={{ color: rc.tx, fontSize: 13, fontWeight: 600 }}>{hol.nameHe}</div>
-                        <div style={{ color: "#64748B", fontSize: 11 }}>{HEB_DAYS[day.dow]} {day.date}/{month.m + 1} · {day.hebDate}</div>
+                        <div style={{ color: "#64748B", fontSize: 13 }}>{HEB_DAYS[day.dow]} {day.date}/{month.m + 1} · {day.hebDate}</div>
                       </div>
-                      {hol.major && <span style={{ fontSize: 8, color: rc.tx, background: `${rc.tx}15`, borderRadius: 4, padding: "1px 5px", marginRight: "auto" }}>מרכזי</span>}
+                      {hol.major && <span style={{ fontSize: 12, color: rc.tx, background: `${rc.tx}15`, borderRadius: 4, padding: "1px 5px", marginRight: "auto" }}>מרכזי</span>}
                     </div>
                   );
                 }))}
@@ -1135,7 +1135,7 @@ export default function App() {
               const c = diff > 1.5 ? "#EF4444" : diff > 0.5 ? "#F59E0B" : "#34D399";
               return (
                 <div key={emp.id} style={{ background: "rgba(15,23,42,0.5)", borderRadius: 8, padding: "6px 12px", minWidth: 90, textAlign: "center" }}>
-                  <div style={{ fontSize: 11, color: "#94A3B8", whiteSpace: "nowrap" }}>{emp.name.split(" ")[0]}</div>
+                  <div style={{ fontSize: 13, color: "#64748B", whiteSpace: "nowrap" }}>{emp.name.split(" ")[0]}</div>
                   <div style={{ fontSize: 20, fontWeight: 900, color: c }}>{w}</div>
                   <div style={{ height: 3, borderRadius: 2, background: `${c}25`, marginTop: 4 }}>
                     <div style={{ height: "100%", borderRadius: 2, width: `${maxWE ? (w / maxWE) * 100 : 0}%`, background: c }} />
@@ -1169,21 +1169,21 @@ export default function App() {
               return true;
             });
             return (
-              <div key={i} style={{ ...S.glass, overflow: "hidden", borderColor: "rgba(239,68,68,0.2)" }}>
+              <div key={i} style={{ ...S.glass, overflow: "hidden", borderColor: "rgba(239,68,68,0.15)" }}>
                 <div style={{ padding: "12px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <span style={{ fontSize: 20 }}>{SHIFTS[al.st].icon}</span>
                     <div>
                       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                         <span style={{ fontSize: 14, fontWeight: 600 }}>{HEB_DAYS[al.dow]} {al.date}/{month.m + 1} – {SHIFTS[al.st].label}</span>
-                        {(() => { const d = days.find(dd => dd.ds === al.ds); return d && d.hebDate ? <span style={{ fontSize: 11, color: "#818CF8" }}>{d.hebDate}</span> : null; })()}
+                        {(() => { const d = days.find(dd => dd.ds === al.ds); return d && d.hebDate ? <span style={{ fontSize: 13, color: "#818CF8" }}>{d.hebDate}</span> : null; })()}
                       </div>
                       <div style={{ color: "#F87171", fontSize: 12 }}>{al.issues.join(" · ")}</div>
                       {(() => { const d = days.find(dd => dd.ds === al.ds); return d && d.holidays.length > 0 ? (
                         <div style={{ display: "flex", gap: 4, marginTop: 3 }}>
                           {d.holidays.slice(0, 2).map((hol, hi) => {
                             const rc = RELIGION_CLR[hol.religion];
-                            return <span key={hi} style={{ fontSize: 10, color: rc?.tx, background: rc?.bg, borderRadius: 4, padding: "1px 6px" }}>{rc?.icon} {hol.nameHe}</span>;
+                            return <span key={hi} style={{ fontSize: 12, color: rc?.tx, background: rc?.bg, borderRadius: 4, padding: "1px 6px" }}>{rc?.icon} {hol.nameHe}</span>;
                           })}
                         </div>
                       ) : null; })()}
@@ -1193,12 +1193,12 @@ export default function App() {
                 </div>
                 {avail.length > 0 && (
                   <div style={{ padding: "6px 18px 12px", borderTop: "1px solid rgba(239,68,68,0.08)" }}>
-                    <div style={{ color: "#64748B", fontSize: 11, marginBottom: 4 }}>זמינים ({avail.length}):</div>
+                    <div style={{ color: "#64748B", fontSize: 13, marginBottom: 4 }}>זמינים ({avail.length}):</div>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
                       {avail.slice(0, 10).map(emp => (
-                        <span key={emp.id} onClick={() => toggleAssign(al.ds, al.st, emp.id)} style={{ padding: "3px 10px", borderRadius: 14, fontSize: 11, cursor: "pointer", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", transition: "all 0.15s" }}
+                        <span key={emp.id} onClick={() => toggleAssign(al.ds, al.st, emp.id)} style={{ padding: "3px 10px", borderRadius: 14, fontSize: 13, cursor: "pointer", background: "#F1F5F9", border: "1px solid #E2E8F0", transition: "all 0.15s" }}
                           onMouseEnter={e => { e.target.style.background = "rgba(220,38,38,0.15)"; e.target.style.borderColor = "rgba(220,38,38,0.3)"; }}
-                          onMouseLeave={e => { e.target.style.background = "rgba(255,255,255,0.04)"; e.target.style.borderColor = "rgba(255,255,255,0.08)"; }}
+                          onMouseLeave={e => { e.target.style.background = "#F1F5F9"; e.target.style.borderColor = "#E2E8F0"; }}
                         >{emp.name} ({emp.role})</span>
                       ))}
                     </div>
@@ -1245,7 +1245,7 @@ export default function App() {
               const emp = employees.find(e => e.id === r.empId);
               return (
                 <div key={r.id} style={{ ...S.card, padding: 12, display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                  <span style={{ color: "#94A3B8", fontSize: 13 }}>{emp?.name} – {r.ds}</span>
+                  <span style={{ color: "#64748B", fontSize: 13 }}>{emp?.name} – {r.ds}</span>
                   <span style={S.badge(r.status === "approved" ? "rgba(52,211,153,0.12)" : "rgba(239,68,68,0.12)", r.status === "approved" ? "#34D399" : "#F87171")}>{r.status === "approved" ? "אושר" : "נדחה"}</span>
                 </div>
               );
@@ -1268,19 +1268,19 @@ export default function App() {
       <h2 style={{ fontSize: 22, fontWeight: 800, margin: "0 0 20px" }}>הגדרות</h2>
       <div style={{ ...S.card, maxWidth: 480 }}>
         <div style={{ marginBottom: 20 }}>
-          <label style={{ color: "#94A3B8", fontSize: 13, display: "block", marginBottom: 6 }}>מגבלת חסימות לעובד (לחודש)</label>
+          <label style={{ color: "#64748B", fontSize: 13, display: "block", marginBottom: 6 }}>מגבלת חסימות לעובד (לחודש)</label>
           <input type="number" min={1} max={30} value={maxConst} onChange={e => setMaxConst(parseInt(e.target.value) || 8)} style={S.input} />
         </div>
         <div style={{ padding: 16, borderRadius: 10, background: "rgba(245,158,11,0.05)", border: "1px solid rgba(245,158,11,0.15)" }}>
           <div style={{ color: "#F59E0B", fontSize: 13, fontWeight: 700, marginBottom: 8 }}>קו אדום – דרישות מינימום</div>
-          <div style={{ color: "#94A3B8", fontSize: 12, lineHeight: 1.8 }}>
+          <div style={{ color: "#64748B", fontSize: 12, lineHeight: 1.8 }}>
             ☀️ בוקר: 3 (2 סמב"צ + אחמ"ש/קצין)<br />
             🌆 ערב: 3 (2 סמב"צ + אחמ"ש/קצין)<br />
             🌙 לילה: 2 (חליף אחמ"ש + סמב"צ)
           </div>
         </div>
-        <div style={{ marginTop: 16, padding: 16, borderRadius: 10, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}>
-          <div style={{ color: "#94A3B8", fontSize: 13, fontWeight: 600, marginBottom: 4 }}>סיסמת מנהל</div>
+        <div style={{ marginTop: 16, padding: 16, borderRadius: 10, background: "#FAFAFA", border: "1px solid #E2E8F0" }}>
+          <div style={{ color: "#64748B", fontSize: 13, fontWeight: 600, marginBottom: 4 }}>סיסמת מנהל</div>
           <div style={{ color: "#64748B", fontSize: 12 }}>{ADMIN_PASS}</div>
         </div>
       </div>
@@ -1301,7 +1301,7 @@ export default function App() {
           <h2 style={{ fontSize: 22, fontWeight: 800, margin: "0 0 20px" }}>📄 ייצוא סידור עבודה</h2>
           {/* Status summary */}
           <div style={{ ...S.card, marginBottom: 16 }}>
-            <h3 style={{ margin: "0 0 12px", fontSize: 15, color: "#94A3B8" }}>סטטוס סידור – {HEB_MONTHS[month.m]} {month.y}</h3>
+            <h3 style={{ margin: "0 0 12px", fontSize: 15, color: "#64748B" }}>סטטוס סידור – {HEB_MONTHS[month.m]} {month.y}</h3>
             <div style={{ display: "flex", gap: 16 }}>
               <div style={{ flex: 1, textAlign: "center" }}>
                 <div style={{ fontSize: 28, fontWeight: 900, color: pct === 100 ? "#34D399" : "#F87171" }}>{pct}%</div>
@@ -1327,7 +1327,7 @@ export default function App() {
           <div style={{ ...S.card, marginBottom: 12, cursor: "pointer", transition: "all 0.15s" }}
             onClick={() => { exportToWord(month, days, employees, assign, SHIFTS, SHIFT_KEYS, stats); notify("קובץ Word מוכן להורדה!", "success"); }}
             onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(59,130,246,0.4)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)"; e.currentTarget.style.transform = "translateY(0)"; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = "#E2E8F0"; e.currentTarget.style.transform = "translateY(0)"; }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
               <div style={{ width: 52, height: 52, borderRadius: 12, background: "rgba(59,130,246,0.12)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26 }}>📝</div>
@@ -1343,7 +1343,7 @@ export default function App() {
           <div style={{ ...S.card, marginBottom: 12, cursor: "pointer", transition: "all 0.15s" }}
             onClick={() => { exportToPDF(month, days, employees, assign, SHIFTS, SHIFT_KEYS, stats); notify("חלון הדפסה נפתח", "success"); }}
             onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(220,38,38,0.4)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)"; e.currentTarget.style.transform = "translateY(0)"; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = "#E2E8F0"; e.currentTarget.style.transform = "translateY(0)"; }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
               <div style={{ width: 52, height: 52, borderRadius: 12, background: "rgba(220,38,38,0.12)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26 }}>📄</div>
@@ -1356,8 +1356,8 @@ export default function App() {
           </div>
 
           {/* What's included */}
-          <div style={{ ...S.card, background: "rgba(255,255,255,0.02)" }}>
-            <h3 style={{ margin: "0 0 10px", fontSize: 14, color: "#94A3B8" }}>מה כלול בייצוא?</h3>
+          <div style={{ ...S.card, background: "#FAFAFA" }}>
+            <h3 style={{ margin: "0 0 10px", fontSize: 14, color: "#64748B" }}>מה כלול בייצוא?</h3>
             <div style={{ color: "#64748B", fontSize: 13, lineHeight: 1.8 }}>
               📋 טבלת סידור עבודה מלאה עם כל המשמרות<br/>
               📅 תאריכים עבריים וחגים (יהודיים, נוצריים, מוסלמיים)<br/>
@@ -1400,7 +1400,7 @@ export default function App() {
           <>
             {/* Timeline */}
             <div style={{ ...S.glass, overflow: "hidden", marginBottom: 16 }}>
-              <div style={{ padding: "14px 20px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+              <div style={{ padding: "14px 20px", borderBottom: "1px solid #E2E8F0" }}>
                 <h3 style={{ margin: 0, fontSize: 15 }}>ציר זמן – כל החגים בחודש</h3>
               </div>
               <div style={{ padding: "16px 20px" }}>
@@ -1412,16 +1412,16 @@ export default function App() {
                       {/* timeline dot + line */}
                       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: 20, flexShrink: 0 }}>
                         <div style={{ width: 12, height: 12, borderRadius: "50%", background: rc.tx, border: `2px solid ${rc.border}`, zIndex: 1 }} />
-                        {i < monthHolidays.length - 1 && <div style={{ width: 2, flex: 1, minHeight: 20, background: "rgba(255,255,255,0.06)" }} />}
+                        {i < monthHolidays.length - 1 && <div style={{ width: 2, flex: 1, minHeight: 20, background: "#E2E8F0" }} />}
                       </div>
                       {/* content */}
                       <div style={{ flex: 1, padding: "8px 14px", borderRadius: 10, background: rc.bg, border: `1px solid ${rc.border}` }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2 }}>
                           <span style={{ fontSize: 16 }}>{rc.icon}</span>
                           <span style={{ color: rc.tx, fontSize: 15, fontWeight: 700 }}>{h.nameHe}</span>
-                          {h.major && <span style={{ fontSize: 9, background: `${rc.tx}20`, color: rc.tx, borderRadius: 4, padding: "1px 6px", fontWeight: 700 }}>חג מרכזי</span>}
+                          {h.major && <span style={{ fontSize: 13, background: `${rc.tx}20`, color: rc.tx, borderRadius: 4, padding: "1px 6px", fontWeight: 700 }}>חג מרכזי</span>}
                         </div>
-                        <div style={{ color: "#94A3B8", fontSize: 12 }}>
+                        <div style={{ color: "#64748B", fontSize: 12 }}>
                           {HEB_DAYS[h.dow]} {h.date}/{month.m + 1} · {hebD} · {h.name}
                         </div>
                       </div>
@@ -1448,7 +1448,7 @@ export default function App() {
                     {hols.map((h, i) => (
                       <div key={i} style={{ padding: "6px 10px", borderRadius: 6, background: rc.bg, marginBottom: 4 }}>
                         <div style={{ color: rc.tx, fontSize: 13, fontWeight: 600 }}>{h.nameHe}</div>
-                        <div style={{ color: "#64748B", fontSize: 11 }}>{HEB_DAYS[h.dow]} {h.date}/{month.m + 1}</div>
+                        <div style={{ color: "#64748B", fontSize: 13 }}>{HEB_DAYS[h.dow]} {h.date}/{month.m + 1}</div>
                       </div>
                     ))}
                   </div>
@@ -1481,8 +1481,8 @@ export default function App() {
         * { box-sizing: border-box; margin: 0; }
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
+        ::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #CBD5E1; }
       `}</style>
 
       {/* Toast */}
@@ -1495,12 +1495,12 @@ export default function App() {
       <div style={{
         position: "fixed", right: 0, top: 0, bottom: 0, zIndex: 100,
         width: sidebar ? 230 : 58, background: "rgba(8,15,30,0.95)",
-        borderLeft: "1px solid rgba(255,255,255,0.06)",
+        borderLeft: "1px solid #E2E8F0",
         transition: "width 0.25s ease", display: "flex", flexDirection: "column", overflow: "hidden",
       }}>
-        <div style={{ padding: sidebar ? "16px 18px" : "16px 10px", display: "flex", alignItems: "center", gap: 10, borderBottom: "1px solid rgba(255,255,255,0.06)", cursor: "pointer" }} onClick={() => setSidebar(p => !p)}>
+        <div style={{ padding: sidebar ? "16px 18px" : "16px 10px", display: "flex", alignItems: "center", gap: 10, borderBottom: "1px solid #E2E8F0", cursor: "pointer" }} onClick={() => setSidebar(p => !p)}>
           <span style={{ fontSize: 24, flexShrink: 0 }}>🔥</span>
-          {sidebar && <div><div style={{ fontSize: 15, fontWeight: 800 }}>משל"ט</div><div style={{ color: "#475569", fontSize: 10 }}>כבאות והצלה</div></div>}
+          {sidebar && <div><div style={{ fontSize: 15, fontWeight: 800 }}>משל"ט</div><div style={{ color: "#475569", fontSize: 12 }}>כבאות והצלה</div></div>}
         </div>
         <nav style={{ flex: 1, padding: "10px 6px" }}>
           {NAV.map(n => {
@@ -1521,7 +1521,7 @@ export default function App() {
             );
           })}
         </nav>
-        <div style={{ padding: "10px 6px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+        <div style={{ padding: "10px 6px", borderTop: "1px solid #E2E8F0" }}>
           <button onClick={() => { setView("login"); setPw(""); }} style={{ display: "flex", alignItems: "center", gap: 10, width: "100%", padding: sidebar ? "10px 12px" : "10px 0", justifyContent: sidebar ? "flex-start" : "center", borderRadius: 9, border: "none", cursor: "pointer", background: "transparent", color: "#475569", fontSize: 12, fontFamily: "inherit" }}>
             <span style={{ fontSize: 16 }}>🚪</span>
             {sidebar && <span>יציאה</span>}
