@@ -971,9 +971,779 @@ export default function App() {
                   </div>
                 </div>
               );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  };
 
+  // ── EMPLOYEES VIEW ─────────────────────────────────────────
+  const EmployeesView = () => {
+    const [linkId, setLinkId] = useState(null);
+    const [showAdd, setShowAdd] = useState(false);
+    const [newName, setNewName] = useState("");
+    const [newRole, setNewRole] = useState("סמבצ");
+    const [newType, setNewType] = useState("מלאה");
 
+    const addEmployee = () => {
+      if (!newName.trim()) { notify("יש להזין שם", "error"); return; }
+      const maxId = Math.max(...employees.map(e => e.id), 0);
+      setEmployees(prev => [...prev, { id: maxId + 1, name: newName.trim(), role: newRole, type: newType }]);
+      setNewName("");
+      setShowAdd(false);
+      notify(`${newName.trim()} נוסף בהצלחה`, "success");
+    };
 
+    return (
+      <>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+          <h2 style={{ fontSize: 24, fontWeight: 800, margin: 0 }}>ניהול עובדים</h2>
+          <button onClick={() => setShowAdd(p => !p)} style={{ ...S.btnPrimary, padding: "10px 20px", fontSize: 14, display: "flex", alignItems: "center", gap: 6 }}>
+            ➕ הוסף עובד
+          </button>
+        </div>
 
+        {/* Add employee form */}
+        {showAdd && (
+          <div style={{ ...S.card, marginBottom: 16, animation: "fadeIn 0.2s ease" }}>
+            <h3 style={{ margin: "0 0 14px", fontSize: 17, fontWeight: 700 }}>עובד חדש</h3>
+            <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "flex-end" }}>
+              <div style={{ flex: 2, minWidth: 150 }}>
+                <label style={{ color: "#64748B", fontSize: 13, display: "block", marginBottom: 4 }}>שם מלא</label>
+                <input value={newName} onChange={e => setNewName(e.target.value)} placeholder="לדוגמה: ישראל ישראלי" style={S.input} onKeyDown={e => { if (e.key === "Enter") addEmployee(); }} />
+              </div>
+              <div style={{ flex: 1, minWidth: 120 }}>
+                <label style={{ color: "#64748B", fontSize: 13, display: "block", marginBottom: 4 }}>תפקיד</label>
+                <select value={newRole} onChange={e => setNewRole(e.target.value)} style={{ ...S.input, cursor: "pointer" }}>
+                  <option value="קצין">קצין</option>
+                  <option value="אחמש">אחמ"ש</option>
+                  <option value="חליף אחמש">חליף אחמ"ש</option>
+                  <option value="סמבצ">סמב"צ</option>
+                </select>
+              </div>
+              <div style={{ flex: 1, minWidth: 120 }}>
+                <label style={{ color: "#64748B", fontSize: 13, display: "block", marginBottom: 4 }}>סוג העסקה</label>
+                <select value={newType} onChange={e => setNewType(e.target.value)} style={{ ...S.input, cursor: "pointer" }}>
+                  <option value="מלאה">מלאה</option>
+                  <option value="סטודנט">סטודנט</option>
+                </select>
+              </div>
+              <button onClick={addEmployee} style={{ ...S.btnPrimary, padding: "14px 24px" }}>הוסף</button>
+              <button onClick={() => setShowAdd(false)} style={{ ...S.btnGhost, padding: "14px 18px" }}>ביטול</button>
+            </div>
+          </div>
+        )}
 
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(270px,1fr))", gap: 12 }}>
+          {employees.map(emp => {
+            const s = stats[emp.id] || { t: 0, m: 0, e: 0, n: 0, we: 0, h: 0 };
+            const prog = Math.min((s.t / 27) * 100, 100);
+            const blocks = Object.entries(constraints).filter(([k, v]) => k.startsWith(`${emp.id}_`) && v === "block").length;
+            return (
+              <div key={emp.id} style={{ ...S.card, transition: "transform 0.15s, border-color 0.15s" }}
+                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.borderColor = "#CBD5E1"; }}
+                onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.borderColor = "#E2E8F0"; }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
+                  <div>
+                    <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}>{emp.name}</div>
+                    <div style={{ display: "flex", gap: 6 }}>
+                      <span style={S.badge(ROLE_CLR[emp.role].bg, ROLE_CLR[emp.role].tx)}>{emp.role}</span>
+                      <span style={S.badge("#E2E8F0", "#94A3B8")}>{emp.type === "מלאה" ? "מלאה" : "סטודנט"}</span>
+                    </div>
+                  </div>
+                  <button onClick={() => setLinkId(linkId === emp.id ? null : emp.id)} style={{ ...S.btnGhost, padding: "4px 10px", fontSize: 12 }}>🔗</button>
+                </div>
+                {/* progress */}
+                <div style={{ marginBottom: 10 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "#64748B", marginBottom: 4 }}>
+                    <span>{s.t} / 21+ משמרות</span><span>{s.h} שעות</span>
+                  </div>
+                  <div style={{ height: 4, background: "#E2E8F0", borderRadius: 2 }}>
+                    <div style={{ height: "100%", borderRadius: 2, width: `${prog}%`, background: prog >= 100 ? "#EF4444" : prog >= 75 ? "#F59E0B" : "#059669", transition: "width 0.3s" }} />
+                  </div>
+                </div>
+                {/* shift dist */}
+                <div style={{ display: "flex", gap: 6 }}>
+                  {SHIFT_KEYS.map(st => (
+                    <div key={st} style={{ flex: 1, textAlign: "center", padding: "3px 0", borderRadius: 6, background: `${SHIFTS[st].clr}10` }}>
+                      <div style={{ fontSize: 12 }}>{SHIFTS[st].icon}</div>
+                      <div style={{ color: SHIFTS[st].clr, fontSize: 14, fontWeight: 800 }}>{s[st[0]]}</div>
+                    </div>
+                  ))}
+                  <div style={{ flex: 1, textAlign: "center", padding: "3px 0", borderRadius: 6, background: "rgba(245,158,11,0.15)" }}>
+                    <div style={{ fontSize: 12 }}>🏠</div>
+                    <div style={{ color: "#F59E0B", fontSize: 14, fontWeight: 800 }}>{s.we}</div>
+                  </div>
+                </div>
+                {blocks > 0 && <div style={{ marginTop: 6, fontSize: 13, color: "#EF4444" }}>🚫 {blocks} חסימות</div>}
+                {linkId === emp.id && (() => {
+                  const empLink = `${window.location?.origin || "https://mashlat.vercel.app"}?emp=${emp.id}`;
+                  return (
+                  <div style={{ marginTop: 10, padding: 10, borderRadius: 8, background: "#F1F5F9", border: "1px solid #E2E8F0" }}>
+                    <div style={{ color: "#64748B", fontSize: 13, marginBottom: 2 }}>קישור אישי:</div>
+                    <div style={{ color: "#2563EB", fontSize: 13, wordBreak: "break-all", fontFamily: "monospace" }}>{empLink}</div>
+                    <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
+                      <button onClick={() => { navigator.clipboard?.writeText(empLink); notify("הקישור הועתק!"); }} style={{ ...S.btnGhost, flex: 1, fontSize: 12, textAlign: "center" }}>
+                        📋 העתק קישור
+                      </button>
+                      <button onClick={() => { setEmpPortal(emp); setView("employee_portal"); }} style={{ ...S.btnGhost, flex: 1, fontSize: 12, textAlign: "center" }}>
+                        👁️ תצוגה מקדימה
+                      </button>
+                    </div>
+                  </div>);
+                })()}
+              </div>
+            );
+          })}
+        </div>
+      </>
+    );
+  };
 
+  // ── DASHBOARD VIEW ─────────────────────────────────────────
+  const DashboardView = () => {
+    const totalS = days.length * 3;
+    const filled = Object.keys(assign).filter(k => k.startsWith(`${month.y}-${pad2(month.m + 1)}`)).length;
+    const valid = totalS - alerts.length;
+    const weVals = employees.map(e => stats[e.id]?.we || 0);
+    const avgWE = employees.length ? (weVals.reduce((a, b) => a + b, 0) / employees.length).toFixed(1) : "0";
+    const maxWE = Math.max(...weVals, 0);
+
+    return (
+      <>
+        <MonthHeader />
+        {/* summary cards */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))", gap: 12, marginBottom: 20 }}>
+          {[
+            { label: 'סה"כ משמרות', val: totalS, clr: "#60A5FA", sub: `${filled} מאוישות` },
+            { label: "תקינות", val: `${totalS ? Math.round((valid / totalS) * 100) : 0}%`, clr: alerts.length === 0 ? "#34D399" : "#F87171", sub: `${alerts.length} התראות` },
+            { label: 'ממוצע סופ"ש', val: avgWE, clr: "#F59E0B", sub: `מקס: ${maxWE}` },
+            { label: "עובדים", val: employees.length, clr: "#A78BFA", sub: Object.entries(ROLE_RANK).map(([r]) => `${employees.filter(e => e.role === r).length} ${r}`).filter(s => !s.startsWith("0")).join(", ") },
+          ].map((c, i) => (
+            <div key={i} style={S.card}>
+              <div style={{ color: "#64748B", fontSize: 12, marginBottom: 6 }}>{c.label}</div>
+              <div style={{ color: c.clr, fontSize: 30, fontWeight: 900, lineHeight: 1 }}>{c.val}</div>
+              <div style={{ color: "#475569", fontSize: 13, marginTop: 4 }}>{c.sub}</div>
+            </div>
+          ))}
+        </div>
+        {/* table */}
+        <div style={{ ...S.glass, overflow: "hidden" }}>
+          <div style={{ padding: "14px 20px", borderBottom: "1px solid #E2E8F0" }}>
+            <h3 style={{ margin: 0, fontSize: 16 }}>סטטיסטיקת עובדים</h3>
+          </div>
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <thead>
+                <tr style={{ background: "#F1F5F9" }}>
+                  {["שם","תפקיד","סה\"כ","☀️","🌆","🌙","סופ\"ש","שעות","סטטוס"].map(h => (
+                    <th key={h} style={{ padding: "10px 12px", textAlign: "right", color: "#64748B", fontSize: 12, fontWeight: 600, whiteSpace: "nowrap" }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {employees.map(emp => {
+                  const s = stats[emp.id] || { t: 0, m: 0, e: 0, n: 0, we: 0, h: 0 };
+                  let status = "תקין", stClr = "#34D399";
+                  if (s.t < 21) { status = "חסר"; stClr = "#F87171"; }
+                  else if (s.h > 218) { status = "חריגה"; stClr = "#F59E0B"; }
+                  return (
+                    <tr key={emp.id} style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
+                      <td style={{ padding: "10px 12px", fontSize: 13, fontWeight: 500 }}>{emp.name}</td>
+                      <td style={{ padding: "10px 12px" }}><span style={S.badge(ROLE_CLR[emp.role].bg, ROLE_CLR[emp.role].tx)}>{emp.role}</span></td>
+                      <td style={{ padding: "10px 12px", fontSize: 14, fontWeight: 800 }}>{s.t}</td>
+                      <td style={{ padding: "10px 12px", color: SHIFTS.morning.clr }}>{s.m}</td>
+                      <td style={{ padding: "10px 12px", color: SHIFTS.evening.clr }}>{s.e}</td>
+                      <td style={{ padding: "10px 12px", color: SHIFTS.night.clr }}>{s.n}</td>
+                      <td style={{ padding: "10px 12px", color: "#F59E0B" }}>{s.we}</td>
+                      <td style={{ padding: "10px 12px", color: "#64748B" }}>{s.h}</td>
+                      <td style={{ padding: "10px 12px" }}><span style={{ ...S.badge(`${stClr}15`, stClr), fontSize: 13 }}>{status}</span></td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        {/* Holidays this month */}
+        {(() => {
+          const monthHolidays = days.filter(d => d.holidays.length > 0);
+          if (monthHolidays.length === 0) return null;
+          return (
+            <div style={{ ...S.card, marginTop: 12 }}>
+              <h3 style={{ margin: "0 0 14px", fontSize: 16 }}>🗓️ חגים ומועדים בחודש זה</h3>
+              <div style={{ display: "flex", gap: 6, marginBottom: 12 }}>
+                {Object.entries(RELIGION_CLR).map(([rel, rc]) => (
+                  <span key={rel} style={{ fontSize: 13, color: rc.tx, background: rc.bg, border: `1px solid ${rc.border}`, borderRadius: 6, padding: "3px 10px" }}>
+                    {rc.icon} {rel === "jewish" ? "יהדות" : rel === "christian" ? "נצרות" : "אסלאם"}
+                  </span>
+                ))}
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 6 }}>
+                {monthHolidays.map(day => day.holidays.map((hol, hi) => {
+                  const rc = RELIGION_CLR[hol.religion] || RELIGION_CLR.jewish;
+                  return (
+                    <div key={`${day.date}-${hi}`} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", borderRadius: 8, background: rc.bg, border: `1px solid ${rc.border}` }}>
+                      <div style={{ fontSize: 18 }}>{rc.icon}</div>
+                      <div>
+                        <div style={{ color: rc.tx, fontSize: 13, fontWeight: 600 }}>{hol.nameHe}</div>
+                        <div style={{ color: "#64748B", fontSize: 13 }}>{HEB_DAYS[day.dow]} {day.date}/{month.m + 1} · {day.hebDate}</div>
+                      </div>
+                      {hol.major && <span style={{ fontSize: 12, color: rc.tx, background: `${rc.tx}15`, borderRadius: 4, padding: "1px 5px", marginRight: "auto" }}>מרכזי</span>}
+                    </div>
+                  );
+                }))}
+              </div>
+            </div>
+          );
+        })()}
+        {/* weekend fairness */}
+        <div style={{ ...S.card, marginTop: 12 }}>
+          <h3 style={{ margin: "0 0 14px", fontSize: 16 }}>חלוקת סופ"ש</h3>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {employees.map(emp => {
+              const w = stats[emp.id]?.we || 0;
+              const diff = Math.abs(w - parseFloat(avgWE));
+              const c = diff > 1.5 ? "#EF4444" : diff > 0.5 ? "#F59E0B" : "#34D399";
+              return (
+                <div key={emp.id} style={{ background: "rgba(15,23,42,0.5)", borderRadius: 8, padding: "6px 12px", minWidth: 90, textAlign: "center" }}>
+                  <div style={{ fontSize: 13, color: "#64748B", whiteSpace: "nowrap" }}>{emp.name.split(" ")[0]}</div>
+                  <div style={{ fontSize: 20, fontWeight: 900, color: c }}>{w}</div>
+                  <div style={{ height: 3, borderRadius: 2, background: `${c}25`, marginTop: 4 }}>
+                    <div style={{ height: "100%", borderRadius: 2, width: `${maxWE ? (w / maxWE) * 100 : 0}%`, background: c }} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </>
+    );
+  };
+
+  // ── ALERTS VIEW ────────────────────────────────────────────
+  const AlertsView = () => (
+    <>
+      <h2 style={{ fontSize: 22, fontWeight: 800, margin: "0 0 20px" }}>התראות ופערים ({alerts.length})</h2>
+      {alerts.length === 0 ? (
+        <div style={{ ...S.card, textAlign: "center", padding: 40, background: "rgba(5,150,105,0.06)", borderColor: "rgba(52,211,153,0.15)" }}>
+          <div style={{ fontSize: 48, marginBottom: 8 }}>✅</div>
+          <div style={{ fontSize: 18, fontWeight: 600, color: "#34D399" }}>כל המשמרות תקינות!</div>
+          <div style={{ color: "#64748B", fontSize: 13 }}>קו אדום מתקיים בכל המשמרות</div>
+        </div>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {alerts.map((al, i) => {
+            const avail = employees.filter(emp => {
+              if (constraints[`${emp.id}_${shiftKey(al.ds, al.st)}`] === "block") return false;
+              if (vacations[`${emp.id}_${al.ds}`]) return false;
+              if ((assign[shiftKey(al.ds, al.st)] || []).includes(emp.id)) return false;
+              return true;
+            });
+            return (
+              <div key={i} style={{ ...S.glass, overflow: "hidden", borderColor: "rgba(239,68,68,0.15)" }}>
+                <div style={{ padding: "12px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <span style={{ fontSize: 20 }}>{SHIFTS[al.st].icon}</span>
+                    <div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <span style={{ fontSize: 14, fontWeight: 600 }}>{HEB_DAYS[al.dow]} {al.date}/{month.m + 1} – {SHIFTS[al.st].label}</span>
+                        {(() => { const d = days.find(dd => dd.ds === al.ds); return d && d.hebDate ? <span style={{ fontSize: 13, color: "#818CF8" }}>{d.hebDate}</span> : null; })()}
+                      </div>
+                      <div style={{ color: "#F87171", fontSize: 12 }}>{al.issues.join(" · ")}</div>
+                      {(() => { const d = days.find(dd => dd.ds === al.ds); return d && d.holidays.length > 0 ? (
+                        <div style={{ display: "flex", gap: 4, marginTop: 3 }}>
+                          {d.holidays.slice(0, 2).map((hol, hi) => {
+                            const rc = RELIGION_CLR[hol.religion];
+                            return <span key={hi} style={{ fontSize: 12, color: rc?.tx, background: rc?.bg, borderRadius: 4, padding: "1px 6px" }}>{rc?.icon} {hol.nameHe}</span>;
+                          })}
+                        </div>
+                      ) : null; })()}
+                    </div>
+                  </div>
+                  <button onClick={() => setModal({ day: days.find(d => d.ds === al.ds), st: al.st })} style={{ ...S.btnGhost, borderColor: "rgba(220,38,38,0.3)", color: "#F87171", fontSize: 12 }}>שבץ</button>
+                </div>
+                {avail.length > 0 && (
+                  <div style={{ padding: "6px 18px 12px", borderTop: "1px solid rgba(239,68,68,0.08)" }}>
+                    <div style={{ color: "#64748B", fontSize: 13, marginBottom: 4 }}>זמינים ({avail.length}):</div>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                      {avail.slice(0, 10).map(emp => (
+                        <span key={emp.id} onClick={() => toggleAssign(al.ds, al.st, emp.id)} style={{ padding: "3px 10px", borderRadius: 14, fontSize: 13, cursor: "pointer", background: "#F1F5F9", border: "1px solid #E2E8F0", transition: "all 0.15s" }}
+                          onMouseEnter={e => { e.target.style.background = "rgba(220,38,38,0.15)"; e.target.style.borderColor = "rgba(220,38,38,0.3)"; }}
+                          onMouseLeave={e => { e.target.style.background = "#F1F5F9"; e.target.style.borderColor = "#E2E8F0"; }}
+                        >{emp.name} ({emp.role})</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </>
+  );
+
+  // ── VACATIONS VIEW ─────────────────────────────────────────
+  const VacationsView = () => {
+    const pending = vacReqs.filter(r => r.status === "pending");
+    const done = vacReqs.filter(r => r.status !== "pending");
+    return (
+      <>
+        <h2 style={{ fontSize: 22, fontWeight: 800, margin: "0 0 20px" }}>ניהול חופשות</h2>
+        {pending.length > 0 && (
+          <div style={{ marginBottom: 20 }}>
+            <h3 style={{ color: "#F59E0B", fontSize: 14, margin: "0 0 10px" }}>ממתינות ({pending.length})</h3>
+            {pending.map(r => {
+              const emp = employees.find(e => e.id === r.empId);
+              return (
+                <div key={r.id} style={{ ...S.card, display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8, borderColor: "rgba(245,158,11,0.2)" }}>
+                  <div>
+                    <div style={{ fontSize: 14, fontWeight: 600 }}>{emp?.name} – {r.ds}</div>
+                  </div>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <button onClick={() => approveVacation(r.id, true)} style={{ ...S.btnGhost, borderColor: "rgba(52,211,153,0.3)", color: "#34D399" }}>✓ אשר</button>
+                    <button onClick={() => approveVacation(r.id, false)} style={{ ...S.btnGhost, borderColor: "rgba(239,68,68,0.3)", color: "#F87171" }}>✗ דחה</button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+        {done.length > 0 && (
+          <div>
+            <h3 style={{ color: "#64748B", fontSize: 14, margin: "0 0 10px" }}>היסטוריה ({done.length})</h3>
+            {done.map(r => {
+              const emp = employees.find(e => e.id === r.empId);
+              return (
+                <div key={r.id} style={{ ...S.card, padding: 12, display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                  <span style={{ color: "#64748B", fontSize: 13 }}>{emp?.name} – {r.ds}</span>
+                  <span style={S.badge(r.status === "approved" ? "rgba(52,211,153,0.12)" : "rgba(239,68,68,0.12)", r.status === "approved" ? "#34D399" : "#F87171")}>{r.status === "approved" ? "אושר" : "נדחה"}</span>
+                </div>
+              );
+            })}
+          </div>
+        )}
+        {vacReqs.length === 0 && (
+          <div style={{ ...S.card, textAlign: "center", padding: 40 }}>
+            <div style={{ fontSize: 48, marginBottom: 8 }}>🏖️</div>
+            <div style={{ color: "#64748B", fontSize: 14 }}>אין בקשות חופשה</div>
+          </div>
+        )}
+      </>
+    );
+  };
+
+  // ── SETTINGS VIEW ──────────────────────────────────────────
+  const SettingsView = () => (
+    <>
+      <h2 style={{ fontSize: 24, fontWeight: 800, margin: "0 0 20px" }}>הגדרות</h2>
+
+      {/* Quick access to other views */}
+      <div style={{ display: "flex", gap: 10, marginBottom: 20, flexWrap: "wrap" }}>
+        {[
+          { id: "dashboard", icon: "📊", label: "דשבורד" },
+          { id: "holidays", icon: "🕎", label: "לוח חגים" },
+          { id: "export", icon: "📄", label: "ייצוא" },
+        ].map(n => (
+          <button key={n.id} onClick={() => setView(n.id)} style={{
+            ...S.btnGhost, display: "flex", alignItems: "center", gap: 8,
+            padding: "12px 18px", borderRadius: 14, fontSize: 15,
+          }}>
+            <span style={{ fontSize: 20 }}>{n.icon}</span>
+            {n.label}
+          </button>
+        ))}
+      </div>
+
+      <div style={{ ...S.card, maxWidth: 520 }}>
+        <div style={{ marginBottom: 20 }}>
+          <label style={{ color: "#64748B", fontSize: 13, display: "block", marginBottom: 6 }}>מגבלת חסימות לעובד (לחודש)</label>
+          <input type="number" min={1} max={30} value={maxConst} onChange={e => setMaxConst(parseInt(e.target.value) || 8)} style={S.input} />
+        </div>
+        <div style={{ padding: 16, borderRadius: 10, background: "rgba(245,158,11,0.05)", border: "1px solid rgba(245,158,11,0.15)" }}>
+          <div style={{ color: "#F59E0B", fontSize: 13, fontWeight: 700, marginBottom: 8 }}>קו אדום – דרישות מינימום</div>
+          <div style={{ color: "#64748B", fontSize: 12, lineHeight: 1.8 }}>
+            ☀️ בוקר: 3 (2 סמב"צ + אחמ"ש/קצין)<br />
+            🌆 ערב: 3 (2 סמב"צ + אחמ"ש/קצין)<br />
+            🌙 לילה: 2 (חליף אחמ"ש + סמב"צ)
+          </div>
+        </div>
+        <div style={{ marginTop: 16, padding: 16, borderRadius: 10, background: "#FAFAFA", border: "1px solid #E2E8F0" }}>
+          <div style={{ color: "#64748B", fontSize: 13, fontWeight: 600, marginBottom: 4 }}>סיסמת מנהל</div>
+          <div style={{ color: "#64748B", fontSize: 12 }}>{ADMIN_PASS}</div>
+        </div>
+
+        {/* Admin management tools */}
+        <div style={{ marginTop: 24, padding: 16, borderRadius: 10, background: "#FEF2F2", border: "1px solid #FECACA" }}>
+          <div style={{ color: "#DC2626", fontSize: 15, fontWeight: 700, marginBottom: 14 }}>🔧 כלי ניהול</div>
+
+          {/* Clear all assignments for month */}
+          <div style={{ marginBottom: 14 }}>
+            <div style={{ color: "#1E293B", fontSize: 14, fontWeight: 600, marginBottom: 6 }}>🗑️ מחיקת כל שיבוצי החודש</div>
+            <div style={{ color: "#64748B", fontSize: 12, marginBottom: 8 }}>מוחק את כל השיבוצים של {HEB_MONTHS[month.m]} {month.y}</div>
+            <button onClick={() => {
+              if (confirm(`למחוק את כל השיבוצים של ${HEB_MONTHS[month.m]} ${month.y}? פעולה זו לא ניתנת לביטול!`)) {
+                setAssign(prev => {
+                  const next = { ...prev };
+                  Object.keys(next).forEach(k => { if (k.startsWith(`${month.y}-${pad2(month.m + 1)}`)) delete next[k]; });
+                  return next;
+                });
+                notify("כל שיבוצי החודש נמחקו", "success");
+              }
+            }} style={{ ...S.btnPrimary, fontSize: 13, padding: "8px 16px" }}>
+              מחק שיבוצי חודש
+            </button>
+          </div>
+
+          <hr style={{ border: "none", borderTop: "1px solid #FECACA", margin: "14px 0" }} />
+
+          {/* Remove employee from specific shift */}
+          <div style={{ marginBottom: 14 }}>
+            <div style={{ color: "#1E293B", fontSize: 14, fontWeight: 600, marginBottom: 6 }}>👤 הסרת עובד ממשמרת</div>
+            <div style={{ color: "#64748B", fontSize: 12, marginBottom: 8 }}>לחץ על משמרת בלוח השנה → לחץ על עובד משובץ כדי להסיר</div>
+          </div>
+
+          <hr style={{ border: "none", borderTop: "1px solid #FECACA", margin: "14px 0" }} />
+
+          {/* Reset employee constraints */}
+          <div style={{ marginBottom: 14 }}>
+            <div style={{ color: "#1E293B", fontSize: 14, fontWeight: 600, marginBottom: 6 }}>🚫 איפוס אילוצים של עובד</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              {employees.map(emp => (
+                <button key={emp.id} onClick={() => {
+                  if (confirm(`לאפס את כל האילוצים של ${emp.name}?`)) {
+                    setConstraints(prev => {
+                      const next = { ...prev };
+                      Object.keys(next).forEach(k => { if (k.startsWith(`${emp.id}_`)) delete next[k]; });
+                      return next;
+                    });
+                    notify(`אילוצים של ${emp.name} אופסו`, "success");
+                  }
+                }} style={{ ...S.btnGhost, fontSize: 12, padding: "4px 10px" }}>
+                  {emp.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <hr style={{ border: "none", borderTop: "1px solid #FECACA", margin: "14px 0" }} />
+
+          {/* Delete employee */}
+          <div>
+            <div style={{ color: "#1E293B", fontSize: 14, fontWeight: 600, marginBottom: 6 }}>❌ מחיקת עובד מהמערכת</div>
+            <div style={{ color: "#64748B", fontSize: 12, marginBottom: 8 }}>העובד ייעלם מכל הרשימות והשיבוצים</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              {employees.map(emp => (
+                <button key={emp.id} onClick={() => {
+                  if (confirm(`למחוק את ${emp.name} מהמערכת? כל השיבוצים והאילוצים שלו יימחקו!`)) {
+                    setEmployees(prev => prev.filter(e => e.id !== emp.id));
+                    setAssign(prev => {
+                      const next = { ...prev };
+                      Object.keys(next).forEach(k => { next[k] = next[k].filter(id => id !== emp.id); if (next[k].length === 0) delete next[k]; });
+                      return next;
+                    });
+                    setConstraints(prev => {
+                      const next = { ...prev };
+                      Object.keys(next).forEach(k => { if (k.startsWith(`${emp.id}_`)) delete next[k]; });
+                      return next;
+                    });
+                    notify(`${emp.name} נמחק מהמערכת`, "success");
+                  }
+                }} style={{ ...S.btnGhost, fontSize: 12, padding: "4px 10px", borderColor: "#FECACA", color: "#DC2626" }}>
+                  {emp.name} ✕
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+
+  // ── EXPORT VIEW ─────────────────────────────────────────────
+  const ExportView = () => {
+    const totalShifts = days.length * 3;
+    const filled = Object.keys(assign).filter(k => k.startsWith(`${month.y}-${pad2(month.m + 1)}`)).length;
+    const valid = totalShifts - alerts.length;
+    const pct = totalShifts ? Math.round((valid / totalShifts) * 100) : 0;
+
+    return (
+      <>
+        <MonthHeader />
+        <div style={{ maxWidth: 600 }}>
+          <h2 style={{ fontSize: 22, fontWeight: 800, margin: "0 0 20px" }}>📄 ייצוא סידור עבודה</h2>
+          {/* Status summary */}
+          <div style={{ ...S.card, marginBottom: 16 }}>
+            <h3 style={{ margin: "0 0 12px", fontSize: 15, color: "#64748B" }}>סטטוס סידור – {HEB_MONTHS[month.m]} {month.y}</h3>
+            <div style={{ display: "flex", gap: 16 }}>
+              <div style={{ flex: 1, textAlign: "center" }}>
+                <div style={{ fontSize: 28, fontWeight: 900, color: pct === 100 ? "#34D399" : "#F87171" }}>{pct}%</div>
+                <div style={{ color: "#64748B", fontSize: 12 }}>תקינות</div>
+              </div>
+              <div style={{ flex: 1, textAlign: "center" }}>
+                <div style={{ fontSize: 28, fontWeight: 900, color: "#60A5FA" }}>{filled}/{totalShifts}</div>
+                <div style={{ color: "#64748B", fontSize: 12 }}>מאוישות</div>
+              </div>
+              <div style={{ flex: 1, textAlign: "center" }}>
+                <div style={{ fontSize: 28, fontWeight: 900, color: alerts.length === 0 ? "#34D399" : "#F87171" }}>{alerts.length}</div>
+                <div style={{ color: "#64748B", fontSize: 12 }}>התראות</div>
+              </div>
+            </div>
+            {alerts.length > 0 && (
+              <div style={{ marginTop: 12, padding: "8px 12px", borderRadius: 8, background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.15)", color: "#F87171", fontSize: 12 }}>
+                ⚠️ יש {alerts.length} משמרות שלא עומדות בקו אדום. הייצוא יסמן אותן בכתום.
+              </div>
+            )}
+          </div>
+
+          {/* Word export */}
+          <div style={{ ...S.card, marginBottom: 12, cursor: "pointer", transition: "all 0.15s" }}
+            onClick={() => { exportToWord(month, days, employees, assign, SHIFTS, SHIFT_KEYS, stats); notify("קובץ Word מוכן להורדה!", "success"); }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(59,130,246,0.4)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = "#E2E8F0"; e.currentTarget.style.transform = "translateY(0)"; }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+              <div style={{ width: 52, height: 52, borderRadius: 12, background: "rgba(59,130,246,0.12)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26 }}>📝</div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 2 }}>ייצוא ל-Word (.doc)</div>
+                <div style={{ color: "#64748B", fontSize: 12 }}>קובץ וורד מפורט עם טבלת סידור, סטטיסטיקות עובדים, ולוח חגים</div>
+              </div>
+              <div style={{ color: "#3B82F6", fontSize: 24 }}>⬇️</div>
+            </div>
+          </div>
+
+          {/* PDF export */}
+          <div style={{ ...S.card, marginBottom: 12, cursor: "pointer", transition: "all 0.15s" }}
+            onClick={() => { exportToPDF(month, days, employees, assign, SHIFTS, SHIFT_KEYS, stats); notify("חלון הדפסה נפתח", "success"); }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(220,38,38,0.4)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = "#E2E8F0"; e.currentTarget.style.transform = "translateY(0)"; }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+              <div style={{ width: 52, height: 52, borderRadius: 12, background: "rgba(220,38,38,0.12)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26 }}>📄</div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 2 }}>ייצוא ל-PDF</div>
+                <div style={{ color: "#64748B", fontSize: 12 }}>פותח חלון הדפסה – בחר "שמור כ-PDF" כדי לשמור קובץ</div>
+              </div>
+              <div style={{ color: "#DC2626", fontSize: 24 }}>🖨️</div>
+            </div>
+          </div>
+
+          {/* What's included */}
+          <div style={{ ...S.card, background: "#FAFAFA" }}>
+            <h3 style={{ margin: "0 0 10px", fontSize: 14, color: "#64748B" }}>מה כלול בייצוא?</h3>
+            <div style={{ color: "#64748B", fontSize: 13, lineHeight: 1.8 }}>
+              📋 טבלת סידור עבודה מלאה עם כל המשמרות<br/>
+              📅 תאריכים עבריים וחגים (יהודיים, נוצריים, מוסלמיים)<br/>
+              👥 שמות ותפקידים של כל עובד משובץ<br/>
+              ⚠️ סימון משמרות שלא עומדות בקו אדום<br/>
+              📊 עמוד סטטיסטיקות – שעות, חלוקת משמרות, סופ"ש<br/>
+              🕎 עמוד חגים ומועדים לחודש
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  };
+
+  // ── HOLIDAYS VIEW ────────────────────────────────────────────
+  const HolidaysView = () => {
+    const allHolidays = { ...getHolidays(month.y), ...getHolidays(month.y + 1) };
+    const monthKey = `${month.y}-${pad2(month.m + 1)}`;
+    const monthHolidays = Object.entries(allHolidays)
+      .filter(([ds]) => ds.startsWith(monthKey))
+      .sort(([a], [b]) => a.localeCompare(b))
+      .flatMap(([ds, hols]) => hols.map(h => ({ ...h, ds, date: parseInt(ds.split("-")[2]), dow: new Date(ds).getDay() })));
+
+    const byReligion = { jewish: [], christian: [], muslim: [] };
+    monthHolidays.forEach(h => { if (byReligion[h.religion]) byReligion[h.religion].push(h); });
+
+    return (
+      <>
+        <MonthHeader />
+        <div style={{ ...S.card, marginBottom: 16 }}>
+          <h2 style={{ fontSize: 20, fontWeight: 800, margin: "0 0 4px" }}>🕎 לוח חגים ומועדים</h2>
+          <p style={{ color: "#64748B", fontSize: 13, margin: 0 }}>חגים יהודיים, נוצריים ומוסלמיים – {HEB_MONTHS[month.m]} {month.y}</p>
+        </div>
+        {monthHolidays.length === 0 ? (
+          <div style={{ ...S.card, textAlign: "center", padding: 40 }}>
+            <div style={{ fontSize: 48, marginBottom: 8 }}>📅</div>
+            <div style={{ color: "#64748B", fontSize: 14 }}>אין חגים בחודש זה</div>
+          </div>
+        ) : (
+          <>
+            {/* Timeline */}
+            <div style={{ ...S.glass, overflow: "hidden", marginBottom: 16 }}>
+              <div style={{ padding: "14px 20px", borderBottom: "1px solid #E2E8F0" }}>
+                <h3 style={{ margin: 0, fontSize: 15 }}>ציר זמן – כל החגים בחודש</h3>
+              </div>
+              <div style={{ padding: "16px 20px" }}>
+                {monthHolidays.map((h, i) => {
+                  const rc = RELIGION_CLR[h.religion];
+                  const hebD = getHebrewDateStr(month.y, month.m, h.date);
+                  return (
+                    <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 14, marginBottom: 12, position: "relative" }}>
+                      {/* timeline dot + line */}
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: 20, flexShrink: 0 }}>
+                        <div style={{ width: 12, height: 12, borderRadius: "50%", background: rc.tx, border: `2px solid ${rc.border}`, zIndex: 1 }} />
+                        {i < monthHolidays.length - 1 && <div style={{ width: 2, flex: 1, minHeight: 20, background: "#E2E8F0" }} />}
+                      </div>
+                      {/* content */}
+                      <div style={{ flex: 1, padding: "8px 14px", borderRadius: 10, background: rc.bg, border: `1px solid ${rc.border}` }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2 }}>
+                          <span style={{ fontSize: 16 }}>{rc.icon}</span>
+                          <span style={{ color: rc.tx, fontSize: 15, fontWeight: 700 }}>{h.nameHe}</span>
+                          {h.major && <span style={{ fontSize: 13, background: `${rc.tx}20`, color: rc.tx, borderRadius: 4, padding: "1px 6px", fontWeight: 700 }}>חג מרכזי</span>}
+                        </div>
+                        <div style={{ color: "#64748B", fontSize: 12 }}>
+                          {HEB_DAYS[h.dow]} {h.date}/{month.m + 1} · {hebD} · {h.name}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            {/* By religion */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: 12 }}>
+              {Object.entries(byReligion).map(([rel, hols]) => {
+                if (hols.length === 0) return null;
+                const rc = RELIGION_CLR[rel];
+                const relName = rel === "jewish" ? "יהדות" : rel === "christian" ? "נצרות" : "אסלאם";
+                return (
+                  <div key={rel} style={{ ...S.card, borderColor: rc.border }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                      <span style={{ fontSize: 22 }}>{rc.icon}</span>
+                      <div>
+                        <div style={{ color: rc.tx, fontSize: 16, fontWeight: 700 }}>{relName}</div>
+                        <div style={{ color: "#64748B", fontSize: 12 }}>{hols.length} חגים בחודש</div>
+                      </div>
+                    </div>
+                    {hols.map((h, i) => (
+                      <div key={i} style={{ padding: "6px 10px", borderRadius: 6, background: rc.bg, marginBottom: 4 }}>
+                        <div style={{ color: rc.tx, fontSize: 13, fontWeight: 600 }}>{h.nameHe}</div>
+                        <div style={{ color: "#64748B", fontSize: 13 }}>{HEB_DAYS[h.dow]} {h.date}/{month.m + 1}</div>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        )}
+      </>
+    );
+  };
+
+  // ── CONTENT MAP ────────────────────────────────────────────
+  const VIEWS = {
+    calendar: CalendarView,
+    employees: EmployeesView,
+    dashboard: DashboardView,
+    holidays: HolidaysView,
+    export: ExportView,
+    alerts: AlertsView,
+    vacations: VacationsView,
+    settings: SettingsView,
+  };
+  const Content = VIEWS[view] || CalendarView;
+
+  return (
+    <div style={S.root}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800;900&display=swap');
+        * { box-sizing: border-box; margin: 0; -webkit-font-smoothing: antialiased; }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        input:focus { border-color: #3B82F6 !important; box-shadow: 0 0 0 3px rgba(59,130,246,0.12) !important; }
+        button:active { transform: scale(0.97); }
+      `}</style>
+
+      {/* Toast */}
+      {toast && <Toast msg={toast.msg} type={toast.type} />}
+
+      {/* Modal */}
+      <AssignModal />
+
+      {/* Top header bar */}
+      <div style={{
+        position: "sticky", top: 0, zIndex: 100,
+        background: "rgba(239,246,255,0.88)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
+        borderBottom: "0.5px solid rgba(37,99,235,0.1)",
+        padding: "12px 20px",
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <span style={{ fontSize: 28 }}>🔥</span>
+          <div>
+            <div style={{ fontSize: 18, fontWeight: 800, color: "#1E293B", letterSpacing: -0.3 }}>משל"ט</div>
+            <div style={{ color: "#64748B", fontSize: 12 }}>כבאות והצלה</div>
+          </div>
+        </div>
+        <button onClick={() => { setView("login"); setPw(""); }} style={{
+          background: "#F1F5F9", border: "1px solid #E2E8F0", borderRadius: 10,
+          padding: "8px 14px", cursor: "pointer", fontSize: 13, fontFamily: "inherit",
+          color: "#64748B", display: "flex", alignItems: "center", gap: 6,
+        }}>
+          🚪 יציאה
+        </button>
+      </div>
+
+      {/* Main content */}
+      <div style={{ padding: "16px 16px 100px", maxWidth: 1200, margin: "0 auto", animation: "fadeIn 0.3s ease" }}>
+        <Content />
+      </div>
+
+      {/* Bottom tab bar (iOS style) */}
+      <div style={{
+        position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 100,
+        background: "rgba(255,255,255,0.95)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
+        borderTop: "0.5px solid rgba(37,99,235,0.1)",
+        display: "flex",
+        paddingBottom: "env(safe-area-inset-bottom, 8px)",
+        animation: "slideUp 0.3s ease",
+      }}>
+        {NAV.filter(n => ["calendar","employees","vacations","alerts","settings"].includes(n.id)).map(n => {
+          const active = view === n.id;
+          return (
+            <button key={n.id} onClick={() => setView(n.id)} style={{
+              flex: 1, display: "flex", flexDirection: "column", alignItems: "center",
+              padding: "8px 0 6px", border: "none", cursor: "pointer",
+              background: "transparent",
+              color: active ? "#DC2626" : "#94A3B8",
+              fontFamily: "inherit", fontSize: 11, fontWeight: active ? 700 : 500,
+              transition: "all 0.2s",
+            }}>
+              <span style={{ fontSize: 24, marginBottom: 1, transition: "transform 0.2s", transform: active ? "scale(1.15)" : "scale(1)" }}>{n.icon}</span>
+              <span>{n.label}</span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ── TOAST COMPONENT ──────────────────────────────────────────
+function Toast({ msg, type }) {
+  const bg = type === "success" ? "#059669" : type === "error" ? "#DC2626" : "#3B82F6";
+  return (
+    <div style={{
+      position: "fixed", top: 60, left: "50%", transform: "translateX(-50%)",
+      background: bg, color: "#fff",
+      padding: "12px 28px", borderRadius: 14,
+      fontSize: 15, fontWeight: 600, zIndex: 9999,
+      boxShadow: `0 8px 30px ${bg}40`,
+      fontFamily: "-apple-system, BlinkMacSystemFont, 'Rubik', sans-serif",
+      animation: "fadeIn 0.3s ease",
+    }}>
+      {msg}
+    </div>
+  );
+}
