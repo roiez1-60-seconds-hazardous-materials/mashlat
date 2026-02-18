@@ -516,6 +516,21 @@ export default function App() {
   const nextY = now.getMonth() + 1 > 11 ? now.getFullYear() + 1 : now.getFullYear();
 
   const [view, setView] = useState("login");
+
+  // ── Auto-detect employee link ──────────────────────────────
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const empId = params.get("emp");
+      if (empId) {
+        const found = employees.find(e => String(e.id) === empId);
+        if (found) {
+          setEmpPortal(found);
+          setView("employee_portal");
+        }
+      }
+    } catch(e) {}
+  }, []);
   const [month, setMonth] = useState({ y: nextY, m: nextM });
   const [employees] = useState(EMPLOYEES_INIT);
   const [assign, setAssign] = useState({});       // { "2026-03-01_morning": [1,4,9], ... }
@@ -1011,15 +1026,22 @@ export default function App() {
                   </div>
                 </div>
                 {blocks > 0 && <div style={{ marginTop: 6, fontSize: 13, color: "#EF4444" }}>🚫 {blocks} חסימות</div>}
-                {linkId === emp.id && (
-                  <div style={{ marginTop: 10, padding: 10, borderRadius: 8, background: "rgba(0,0,0,0.3)", border: "1px solid #E2E8F0" }}>
+                {linkId === emp.id && (() => {
+                  const empLink = `${window.location?.origin || "https://mashlat.vercel.app"}?emp=${emp.id}`;
+                  return (
+                  <div style={{ marginTop: 10, padding: 10, borderRadius: 8, background: "#F1F5F9", border: "1px solid #E2E8F0" }}>
                     <div style={{ color: "#64748B", fontSize: 13, marginBottom: 2 }}>קישור אישי:</div>
-                    <div style={{ color: "#60A5FA", fontSize: 13, wordBreak: "break-all", fontFamily: "monospace" }}>{window.location?.origin || "https://app.vercel.app"}?emp={emp.id}</div>
-                    <button onClick={() => { setEmpPortal(emp); setView("employee_portal"); }} style={{ ...S.btnGhost, marginTop: 8, width: "100%", fontSize: 12, textAlign: "center" }}>
-                      👁️ תצוגה מקדימה של פורטל העובד
-                    </button>
-                  </div>
-                )}
+                    <div style={{ color: "#2563EB", fontSize: 13, wordBreak: "break-all", fontFamily: "monospace" }}>{empLink}</div>
+                    <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
+                      <button onClick={() => { navigator.clipboard?.writeText(empLink); notify("הקישור הועתק!"); }} style={{ ...S.btnGhost, flex: 1, fontSize: 12, textAlign: "center" }}>
+                        📋 העתק קישור
+                      </button>
+                      <button onClick={() => { setEmpPortal(emp); setView("employee_portal"); }} style={{ ...S.btnGhost, flex: 1, fontSize: 12, textAlign: "center" }}>
+                        👁️ תצוגה מקדימה
+                      </button>
+                    </div>
+                  </div>);
+                })()}
               </div>
             );
           })}
@@ -1282,6 +1304,90 @@ export default function App() {
         <div style={{ marginTop: 16, padding: 16, borderRadius: 10, background: "#FAFAFA", border: "1px solid #E2E8F0" }}>
           <div style={{ color: "#64748B", fontSize: 13, fontWeight: 600, marginBottom: 4 }}>סיסמת מנהל</div>
           <div style={{ color: "#64748B", fontSize: 12 }}>{ADMIN_PASS}</div>
+        </div>
+
+        {/* Admin management tools */}
+        <div style={{ marginTop: 24, padding: 16, borderRadius: 10, background: "#FEF2F2", border: "1px solid #FECACA" }}>
+          <div style={{ color: "#DC2626", fontSize: 15, fontWeight: 700, marginBottom: 14 }}>🔧 כלי ניהול</div>
+
+          {/* Clear all assignments for month */}
+          <div style={{ marginBottom: 14 }}>
+            <div style={{ color: "#1E293B", fontSize: 14, fontWeight: 600, marginBottom: 6 }}>🗑️ מחיקת כל שיבוצי החודש</div>
+            <div style={{ color: "#64748B", fontSize: 12, marginBottom: 8 }}>מוחק את כל השיבוצים של {HEB_MONTHS[month.m]} {month.y}</div>
+            <button onClick={() => {
+              if (confirm(`למחוק את כל השיבוצים של ${HEB_MONTHS[month.m]} ${month.y}? פעולה זו לא ניתנת לביטול!`)) {
+                setAssign(prev => {
+                  const next = { ...prev };
+                  Object.keys(next).forEach(k => { if (k.startsWith(`${month.y}-${pad2(month.m + 1)}`)) delete next[k]; });
+                  return next;
+                });
+                notify("כל שיבוצי החודש נמחקו", "success");
+              }
+            }} style={{ ...S.btnPrimary, fontSize: 13, padding: "8px 16px" }}>
+              מחק שיבוצי חודש
+            </button>
+          </div>
+
+          <hr style={{ border: "none", borderTop: "1px solid #FECACA", margin: "14px 0" }} />
+
+          {/* Remove employee from specific shift */}
+          <div style={{ marginBottom: 14 }}>
+            <div style={{ color: "#1E293B", fontSize: 14, fontWeight: 600, marginBottom: 6 }}>👤 הסרת עובד ממשמרת</div>
+            <div style={{ color: "#64748B", fontSize: 12, marginBottom: 8 }}>לחץ על משמרת בלוח השנה → לחץ על עובד משובץ כדי להסיר</div>
+          </div>
+
+          <hr style={{ border: "none", borderTop: "1px solid #FECACA", margin: "14px 0" }} />
+
+          {/* Reset employee constraints */}
+          <div style={{ marginBottom: 14 }}>
+            <div style={{ color: "#1E293B", fontSize: 14, fontWeight: 600, marginBottom: 6 }}>🚫 איפוס אילוצים של עובד</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              {employees.map(emp => (
+                <button key={emp.id} onClick={() => {
+                  if (confirm(`לאפס את כל האילוצים של ${emp.name}?`)) {
+                    setConstraints(prev => {
+                      const next = { ...prev };
+                      Object.keys(next).forEach(k => { if (k.startsWith(`${emp.id}_`)) delete next[k]; });
+                      return next;
+                    });
+                    notify(`אילוצים של ${emp.name} אופסו`, "success");
+                  }
+                }} style={{ ...S.btnGhost, fontSize: 12, padding: "4px 10px" }}>
+                  {emp.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <hr style={{ border: "none", borderTop: "1px solid #FECACA", margin: "14px 0" }} />
+
+          {/* Delete employee */}
+          <div>
+            <div style={{ color: "#1E293B", fontSize: 14, fontWeight: 600, marginBottom: 6 }}>❌ מחיקת עובד מהמערכת</div>
+            <div style={{ color: "#64748B", fontSize: 12, marginBottom: 8 }}>העובד ייעלם מכל הרשימות והשיבוצים</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              {employees.map(emp => (
+                <button key={emp.id} onClick={() => {
+                  if (confirm(`למחוק את ${emp.name} מהמערכת? כל השיבוצים והאילוצים שלו יימחקו!`)) {
+                    setEmployees(prev => prev.filter(e => e.id !== emp.id));
+                    setAssign(prev => {
+                      const next = { ...prev };
+                      Object.keys(next).forEach(k => { next[k] = next[k].filter(id => id !== emp.id); if (next[k].length === 0) delete next[k]; });
+                      return next;
+                    });
+                    setConstraints(prev => {
+                      const next = { ...prev };
+                      Object.keys(next).forEach(k => { if (k.startsWith(`${emp.id}_`)) delete next[k]; });
+                      return next;
+                    });
+                    notify(`${emp.name} נמחק מהמערכת`, "success");
+                  }
+                }} style={{ ...S.btnGhost, fontSize: 12, padding: "4px 10px", borderColor: "#FECACA", color: "#DC2626" }}>
+                  {emp.name} ✕
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </>
