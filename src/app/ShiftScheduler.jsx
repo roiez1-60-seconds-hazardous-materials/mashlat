@@ -836,59 +836,152 @@ export default function App() {
   // ── CALENDAR VIEW ──────────────────────────────────────────
   const CalendarView = () => {
     const firstDow = new Date(month.y, month.m, 1).getDay();
+    const [selectedDay, setSelectedDay] = useState(null);
+    const today = new Date();
+    const isCurrentMonth = today.getFullYear() === month.y && today.getMonth() === month.m;
+    const todayDate = isCurrentMonth ? today.getDate() : null;
+
+    // Auto-select today or first day
+    const activeDay = selectedDay || days.find(d => d.date === todayDate) || days[0];
+
+    // Shift data for active day
+    const activeShifts = activeDay ? SHIFT_KEYS.map(st => {
+      const k = shiftKey(activeDay.ds, st);
+      const a = (assign[k] || []).map(id => employees.find(e => e.id === id)).filter(Boolean);
+      const v = validateShift(a, st);
+      return { st, a, v, k, si: SHIFTS[st] };
+    }) : [];
+
+    const SHIFT_DOT_COLORS = { morning: "#F59E0B", evening: "#6366F1", night: "#3B82F6" };
+
     return (
       <>
         <MonthHeader showAuto />
-        <div style={{ ...S.glass, overflow: "hidden" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)" }}>
+
+        {/* Calendar grid */}
+        <div style={{ ...S.card, padding: 12, marginBottom: 16 }}>
+          {/* Day headers */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: 4, marginBottom: 8 }}>
             {HEB_DAYS_SHORT.map((d, i) => (
-              <div key={d} style={{ padding: "10px 4px", textAlign: "center", fontSize: 14, fontWeight: 700, color: i >= 5 ? "#F59E0B" : "#64748B", background: "#F1F5F9", borderBottom: "1px solid #E2E8F0" }}>{d}</div>
+              <div key={d} style={{ textAlign: "center", fontSize: 14, fontWeight: 600, color: i >= 5 ? "#F59E0B" : "#94A3B8", padding: "4px 0" }}>{d}</div>
             ))}
-            {Array(firstDow).fill(0).map((_, i) => <div key={`e${i}`} style={{ background: "#F1F5F9", minHeight: 120 }} />)}
+          </div>
+
+          {/* Calendar cells */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: 4 }}>
+            {Array(firstDow).fill(0).map((_, i) => <div key={`e${i}`} />)}
             {days.map(day => {
+              const isToday = day.date === todayDate;
+              const isSelected = activeDay && activeDay.date === day.date;
+              const isWE = day.isWE;
+              const hasHoliday = day.holidays.length > 0;
+
+              // Check alerts for this day
               let hasAlert = false;
-              const cells = SHIFT_KEYS.map(st => {
+              const dotColors = SHIFT_KEYS.map(st => {
                 const k = shiftKey(day.ds, st);
                 const a = (assign[k] || []).map(id => employees.find(e => e.id === id)).filter(Boolean);
                 const v = validateShift(a, st);
                 if (!v.ok) hasAlert = true;
-                return { st, a, v, k };
+                return v.ok ? SHIFT_DOT_COLORS[st] : "#EF4444";
               });
-              const hasHoliday = day.holidays.length > 0;
+
               return (
-                <div key={day.date} style={{ background: hasHoliday ? "rgba(139,92,246,0.08)" : day.isWE ? "rgba(245,158,11,0.06)" : "#FFFFFF", minHeight: 150, padding: "6px 6px", borderBottom: "1px solid rgba(0,0,0,0.06)", borderLeft: "1px solid rgba(0,0,0,0.06)", position: "relative", cursor: "pointer" }}
-                  onMouseEnter={e => { e.currentTarget.style.background = hasHoliday ? "rgba(139,92,246,0.12)" : day.isWE ? "rgba(245,158,11,0.15)" : "#F1F5F9"; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = hasHoliday ? "rgba(139,92,246,0.08)" : day.isWE ? "rgba(245,158,11,0.06)" : "#F8FAFC"; }}
+                <div key={day.date}
+                  onClick={() => setSelectedDay(day)}
+                  style={{
+                    textAlign: "center",
+                    padding: "8px 4px 6px",
+                    borderRadius: 14,
+                    cursor: "pointer",
+                    transition: "all 0.2s",
+                    background: isSelected ? "#EFF6FF" : hasHoliday ? "rgba(139,92,246,0.06)" : isWE ? "rgba(245,158,11,0.04)" : "transparent",
+                    border: isToday ? "2px solid #DC2626" : isSelected ? "2px solid #3B82F6" : "2px solid transparent",
+                    position: "relative",
+                  }}
                 >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 1 }}>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: day.isWE ? "#F59E0B" : "#E2E8F0", background: day.isWE ? "rgba(245,158,11,0.15)" : undefined, borderRadius: 5, padding: "0 4px" }}>{day.date}</span>
-                    <div style={{ display: "flex", alignItems: "center", gap: 3 }}>
-                      {hasAlert && <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#EF4444", boxShadow: "0 0 5px rgba(239,68,68,0.5)" }} />}
-                    </div>
+                  {/* Alert dot */}
+                  {hasAlert && <div style={{ position: "absolute", top: 3, left: 3, width: 7, height: 7, borderRadius: "50%", background: "#EF4444", animation: "pulse 1.5s infinite" }} />}
+
+                  {/* Date number */}
+                  <div style={{
+                    fontSize: 16, fontWeight: isToday || isSelected ? 800 : 600,
+                    color: isToday ? "#DC2626" : isWE ? "#F59E0B" : "#1E293B",
+                    marginBottom: 4,
+                  }}>
+                    {day.date}
                   </div>
-                  {/* Hebrew date */}
-                  {day.hebDate && <div style={{ fontSize: 13, color: "#818CF8", marginBottom: 1, lineHeight: 1.1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{day.hebDate}</div>}
-                  {/* Holidays */}
-                  {day.holidays.length > 0 && (
-                    <div style={{ marginBottom: 1 }}>
-                      {day.holidays.slice(0, 2).map((hol, hi) => {
-                        const rc = RELIGION_CLR[hol.religion] || RELIGION_CLR.jewish;
-                        return <div key={hi} style={{ fontSize: 12, color: rc.tx, background: rc.bg, borderRadius: 3, padding: "0 3px", marginBottom: 1, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: "14px" }}>{rc.icon} {hol.nameHe}</div>;
-                      })}
-                      {day.holidays.length > 2 && <div style={{ fontSize: 12, color: "#64748B" }}>+{day.holidays.length - 2}</div>}
-                    </div>
-                  )}
-                  {cells.map(({ st, a, v }) => (
-                    <div key={st} onClick={() => setModal({ day, st })} style={{ display: "flex", alignItems: "center", gap: 3, padding: "2px 4px", borderRadius: 5, marginBottom: 1, background: v.ok ? `${SHIFTS[st].clr}12` : "rgba(239,68,68,0.08)", border: `1px solid ${v.ok ? SHIFTS[st].clr + "25" : "rgba(239,68,68,0.25)"}` }}>
-                      <span style={{ fontSize: 13 }}>{SHIFTS[st].icon}</span>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: v.ok ? SHIFTS[st].clr : "#EF4444" }}>{a.length}/{minReq[st]}</span>
-                    </div>
-                  ))}
+
+                  {/* 3 shift dots */}
+                  <div style={{ display: "flex", justifyContent: "center", gap: 3 }}>
+                    {dotColors.map((clr, i) => (
+                      <div key={i} style={{ width: 7, height: 7, borderRadius: "50%", background: clr, opacity: 0.85 }} />
+                    ))}
+                  </div>
+
+                  {/* Holiday label */}
+                  {hasHoliday && <div style={{ fontSize: 9, color: "#8B5CF6", marginTop: 2, fontWeight: 600, lineHeight: 1 }}>חג</div>}
                 </div>
               );
             })}
           </div>
         </div>
+
+        {/* Day detail card */}
+        {activeDay && (
+          <div style={{ ...S.card, padding: 16, animation: "fadeIn 0.2s ease" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <div>
+                <span style={{ fontSize: 18, fontWeight: 800, color: "#1E293B" }}>
+                  {activeDay.date} {HEB_MONTHS[month.m]}
+                  {activeDay.date === todayDate && " — היום"}
+                </span>
+                {activeDay.hebDate && <div style={{ fontSize: 13, color: "#818CF8", marginTop: 2 }}>{activeDay.hebDate}</div>}
+                {activeDay.holidays.length > 0 && (
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 4 }}>
+                    {activeDay.holidays.map((hol, hi) => {
+                      const rc = RELIGION_CLR[hol.religion] || RELIGION_CLR.jewish;
+                      return <span key={hi} style={{ fontSize: 12, color: rc.tx, background: rc.bg, borderRadius: 6, padding: "2px 8px", fontWeight: 600 }}>{rc.icon} {hol.nameHe}</span>;
+                    })}
+                  </div>
+                )}
+              </div>
+              {(() => {
+                const allOk = activeShifts.every(s => s.v.ok);
+                return <span style={allOk ? S.tagOk : S.tagErr}>{allOk ? "✓ תקין" : "⚠️ חסר"}</span>;
+              })()}
+            </div>
+
+            {/* Shift rows */}
+            {activeShifts.map(({ st, a, v, si }) => (
+              <div key={st}
+                onClick={() => setModal({ day: activeDay, st })}
+                style={{
+                  display: "flex", alignItems: "center", gap: 12,
+                  padding: "12px 14px", borderRadius: 14,
+                  background: `${si.clr}08`, marginBottom: 6,
+                  cursor: "pointer", transition: "all 0.15s",
+                  border: `1px solid ${v.ok ? si.clr + "20" : "rgba(239,68,68,0.2)"}`,
+                }}
+              >
+                <span style={{ fontSize: 24 }}>{si.icon}</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: si.clr }}>{si.label}</div>
+                  <div style={{ fontSize: 13, color: "#64748B", marginTop: 1 }}>
+                    {a.length > 0 ? a.map(e => e.name.split(" ")[0]).join(", ") : "לא מאויש"}
+                  </div>
+                </div>
+                <span style={{
+                  padding: "3px 10px", borderRadius: 12, fontSize: 14, fontWeight: 700,
+                  background: v.ok ? "#ECFDF5" : "#FEF2F2",
+                  color: v.ok ? "#059669" : "#DC2626",
+                }}>
+                  {a.length}/{minReq[st]}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
       </>
     );
   };
